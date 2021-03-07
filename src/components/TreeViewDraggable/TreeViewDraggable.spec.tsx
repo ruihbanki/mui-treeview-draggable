@@ -15,13 +15,65 @@ describe("TreeViewDraggable", function () {
     cy.contains("Item 3").should("exist");
   });
 
-  it.only("should add the attribute data-dragging when keep pressing the mouse", function () {
-    mountComponent({ allowDragging: true });
-    cy.contains("Item 2.1.1").trigger("mousedown");
-    cy.contains("Item 2.1.1")
-      .closest("li")
-      .invoke("attr", "data-dragging")
-      .should("equal", "true");
+  describe("on a mouse device", function () {
+    it("should set the attribute data-dragging to true when keep pressing the mouse", function () {
+      mountComponent({ allowDragging: true });
+      cy.contains("Item 2.1.1").trigger("mousedown");
+      cy.contains("Item 2.1.1")
+        .closest("li")
+        .invoke("attr", "data-dragging")
+        .should("equal", "true");
+    });
+
+    it("should not set the attribute data-dragging to true when pressing and release the mouse", function () {
+      mountComponent({ allowDragging: true });
+      cy.contains("Item 2.1.1")
+        .trigger("mousedown")
+        .wait(100)
+        .trigger("mouseup");
+      cy.wait(500)
+        .contains("Item 2.1.1")
+        .closest("li")
+        .invoke("attr", "data-dragging")
+        .should("equal", "false");
+    });
+
+    it("should not set the attribute data-dragging to true when pressing and move the mouse", function () {
+      mountComponent({ allowDragging: true });
+      cy.contains("Item 2.1.1")
+        .trigger("mousedown")
+        .wait(100)
+        .trigger("mousemove");
+      cy.wait(500)
+        .contains("Item 2.1.1")
+        .closest("li")
+        .invoke("attr", "data-dragging")
+        .should("equal", "false");
+    });
+  });
+
+  describe("on a touch device", function () {
+    it("should set the attribute data-dragging to true when keep touching", function () {
+      mountComponent({ allowDragging: true });
+      cy.contains("Item 2.1.1").trigger("touchstart");
+      cy.contains("Item 2.1.1")
+        .closest("li")
+        .invoke("attr", "data-dragging")
+        .should("equal", "true");
+    });
+
+    it("should not set the attribute data-dragging to true when touch and release", function () {
+      mountComponent({ allowDragging: true });
+      cy.contains("Item 2.1.1")
+        .trigger("touchstart")
+        .wait(100)
+        .trigger("touchend");
+      cy.wait(500)
+        .contains("Item 2.1.1")
+        .closest("li")
+        .invoke("attr", "data-dragging")
+        .should("equal", "false");
+    });
   });
 });
 
