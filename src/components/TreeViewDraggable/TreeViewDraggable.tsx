@@ -24,8 +24,6 @@ function TreeViewDraggable(props: TreeViewDraggableProps): JSX.Element {
       setDragging(true);
       setFromNodeId(fromNodeIdParam);
       const scrollContainer = getScrollContaneir(target);
-      console.log(target);
-
       startScrollOnMove(scrollContainer);
     },
     [startScrollOnMove]
