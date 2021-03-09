@@ -4,9 +4,13 @@ import TreeView from "@material-ui/lab/TreeView";
 import TreeViewDraggableProps from "./TreeViewDraggableProps";
 import TreeViewDraggableContext from "./TreeViewDraggableContext";
 import useStyles from "./TreeViewDraggable.styles";
+import useScrollOnMove from "../../hooks/useScrollOnMove";
+import { getScrollContaneir } from "../../utils/htmlUtils";
 
 function TreeViewDraggable(props: TreeViewDraggableProps): JSX.Element {
   const { children, allowDragging, onDrop, ...other } = props;
+
+  const { startScrollOnMove, endScrollOnMove } = useScrollOnMove();
 
   const classes = useStyles(props);
 
@@ -14,17 +18,25 @@ function TreeViewDraggable(props: TreeViewDraggableProps): JSX.Element {
 
   const [fromNodeId, setFromNodeId] = React.useState(null);
 
-  const startDragging = React.useCallback((fromNodeIdParam: string) => {
-    console.log("startDragging", fromNodeIdParam);
-    setDragging(true);
-    setFromNodeId(fromNodeIdParam);
-  }, []);
+  const startDragging = React.useCallback(
+    (target: HTMLElement, fromNodeIdParam: string) => {
+      console.log("startDragging", fromNodeIdParam);
+      setDragging(true);
+      setFromNodeId(fromNodeIdParam);
+      const scrollContainer = getScrollContaneir(target);
+      console.log(target);
+
+      startScrollOnMove(scrollContainer);
+    },
+    [startScrollOnMove]
+  );
 
   const stopDragging = React.useCallback(() => {
     console.log("stopDragging");
     setDragging(false);
     setFromNodeId(null);
-  }, []);
+    endScrollOnMove();
+  }, [endScrollOnMove]);
 
   const contextValue = {
     allowDragging,

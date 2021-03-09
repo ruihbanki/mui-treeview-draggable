@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MouseEvent } from "react";
 import TreeItem from "@material-ui/lab/TreeItem";
 
 import { TreeItemProps } from "@material-ui/lab/TreeItem/TreeItem.d";
@@ -51,9 +51,10 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
         event.stopPropagation();
         document.addEventListener("mouseup", mouseUpListener);
         document.addEventListener("mousemove", mouseMoveListener);
+        const target = event.currentTarget as HTMLElement;
         timeoutRef.current = setTimeout(() => {
           document.addEventListener("click", clickListener);
-          startDragging(nodeId);
+          startDragging(target, nodeId);
         }, LONG_PRESS);
       }
 
@@ -105,8 +106,9 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
         event.stopPropagation();
         document.addEventListener("touchend", touchEndListener);
         document.addEventListener("touchmove", touchMoveListener);
+        const target = event.currentTarget as HTMLElement;
         timeoutRef.current = setTimeout(() => {
-          startDragging(nodeId);
+          startDragging(target, nodeId);
         }, LONG_PRESS);
       }
 
