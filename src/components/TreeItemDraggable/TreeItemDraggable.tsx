@@ -8,67 +8,130 @@ import useStyles from "./TreeItemDraggable.styles";
 const LONG_PRESS = 500;
 
 function TreeItemDraggable(props: TreeItemProps): JSX.Element {
-  const { children, onMouseDown, onTouchStart, ...other } = props;
+  const {
+    children,
+    nodeId,
+    onMouseDown,
+    onLabelClick,
+    onTouchStart,
+    ...other
+  } = props;
 
   const classes = useStyles();
 
-  const { allowDragging } = React.useContext(TreeViewDraggableContext);
+  const {
+    allowDragging,
+    startDragging,
+    stopDragging,
+    fromNodeId,
+  } = React.useContext(TreeViewDraggableContext);
 
   const timeoutRef = React.useRef<NodeJS.Timeout>(null);
 
-  const [dragging, setDragging] = React.useState(false);
+  const dragging = nodeId === fromNodeId;
 
-  const mouseUpListener = (event) => {
+  const mouseMoveListener = React.useCallback(() => {
     clearTimeout(timeoutRef.current);
+  }, []);
 
-    event.currentTarget.removeEventListener("mouseup", mouseUpListener);
-    event.currentTarget.removeEventListener("mousemove", mouseMoveListener);
-  };
-
-  const mouseMoveListener = () => {
+  const mouseUpListener = React.useCallback(() => {
     clearTimeout(timeoutRef.current);
-  };
+    document.removeEventListener("mouseup", mouseUpListener);
+    document.removeEventListener("mousemove", mouseMoveListener);
+  }, [mouseMoveListener]);
 
-  const handleMouseDown = (event) => {
-    if (allowDragging) {
-      event.currentTarget.addEventListener("mouseup", mouseUpListener);
-      event.currentTarget.addEventListener("mousemove", mouseMoveListener);
-      timeoutRef.current = setTimeout(() => {
-        setDragging(true);
-      }, LONG_PRESS);
-    }
+  const clickListener = React.useCallback(() => {
+    document.removeEventListener("click", clickListener);
+    stopDragging();
+  }, [stopDragging]);
 
-    if (onMouseDown) {
-      onMouseDown(event);
-    }
-  };
+  const handleMouseDown = React.useCallback(
+    (event) => {
+      if (allowDragging) {
+        event.stopPropagation();
+        document.addEventListener("mouseup", mouseUpListener);
+        document.addEventListener("mousemove", mouseMoveListener);
+        timeoutRef.current = setTimeout(() => {
+          document.addEventListener("click", clickListener);
+          startDragging(nodeId);
+        }, LONG_PRESS);
+      }
 
-  const touchEndListener = (event) => {
+      if (onMouseDown) {
+        onMouseDown(event);
+      }
+    },
+    [
+      allowDragging,
+      clickListener,
+      mouseMoveListener,
+      mouseUpListener,
+      nodeId,
+      onMouseDown,
+      startDragging,
+    ]
+  );
+
+  const handleLabelClick = React.useCallback(
+    (event) => {
+      if (dragging) {
+        console.log("handleLabelClick");
+        event.stopPropagation();
+        document.removeEventListener("click", clickListener);
+        stopDragging();
+      }
+
+      if (onLabelClick) {
+        onLabelClick(event);
+      }
+    },
+    [clickListener, dragging, onLabelClick, stopDragging]
+  );
+
+  const touchMoveListener = React.useCallback(() => {
     clearTimeout(timeoutRef.current);
+  }, []);
 
-    event.currentTarget.removeEventListener("touchend", touchEndListener);
-  };
+  const touchEndListener = React.useCallback(() => {
+    clearTimeout(timeoutRef.current);
+    stopDragging();
+    document.removeEventListener("touchend", touchEndListener);
+    document.removeEventListener("touchmove", touchMoveListener);
+  }, [stopDragging, touchMoveListener]);
 
-  const handleTouchStart = (event) => {
-    if (allowDragging) {
-      event.stopPropagation();
-      event.currentTarget.addEventListener("touchend", touchEndListener);
-      timeoutRef.current = setTimeout(() => {
-        setDragging(true);
-      }, LONG_PRESS);
-    }
+  const handleTouchStart = React.useCallback(
+    (event) => {
+      if (allowDragging) {
+        event.stopPropagation();
+        document.addEventListener("touchend", touchEndListener);
+        document.addEventListener("touchmove", touchMoveListener);
+        timeoutRef.current = setTimeout(() => {
+          startDragging(nodeId);
+        }, LONG_PRESS);
+      }
 
-    if (onTouchStart) {
-      onTouchStart(event);
-    }
-  };
+      if (onTouchStart) {
+        onTouchStart(event);
+      }
+    },
+    [
+      allowDragging,
+      nodeId,
+      onTouchStart,
+      startDragging,
+      touchEndListener,
+      touchMoveListener,
+    ]
+  );
 
   return (
     <TreeItem
       {...other}
       classes={classes}
       data-dragging={dragging}
+      nodeId={nodeId}
       onMouseDown={handleMouseDown}
+      onLabelClick={handleLabelClick}
       onTouchStart={handleTouchStart}
     >
       {children}

@@ -50,6 +50,17 @@ describe("TreeViewDraggable", function () {
         .invoke("attr", "data-dragging")
         .should("equal", "false");
     });
+
+    it.only("should not select when start dragging an item", function () {
+      mountComponent({ allowDragging: true });
+      cy.contains("Item 2.1.1").trigger("mousedown");
+      cy.wait(500)
+        .contains("Item 2.1.1")
+        .closest("li")
+        .trigger("click")
+        .invoke("attr", "aria-selected")
+        .should("not.exist");
+    });
   });
 
   describe("on a touch device", function () {

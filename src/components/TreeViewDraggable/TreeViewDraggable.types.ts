@@ -1,6 +1,6 @@
 import { TreeViewProps as MuiTreeViewProps } from "@material-ui/lab/TreeView/TreeView.d";
 
-type Position = "before" | "after" | "inside";
+type Position = "before" | "after" | "inside"
 
 type TreeViewDraggablePropsBase = {
   allowDragging?: boolean;
@@ -8,5 +8,6 @@ type TreeViewDraggablePropsBase = {
 };
 
 type TreeViewDraggableProps = MuiTreeViewProps & TreeViewDraggablePropsBase;
+
 
 export default TreeViewDraggableProps;

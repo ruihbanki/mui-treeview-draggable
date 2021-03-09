@@ -11,15 +11,20 @@ export default {
 } as Meta;
 
 const Template: Story<TreeViewDraggableProps> = (args) => (
-  <TreeViewDraggable {...args}>
-    <TreeItemDraggable nodeId="item-1" label="Item 1" />
-    <TreeItemDraggable nodeId="item-2" label="Item 2">
-      <TreeItemDraggable nodeId="item-2-1" label="Item 2.1" />
-      <TreeItemDraggable nodeId="item-2-2" label="Item 2.2" />
-      <TreeItemDraggable nodeId="item-3" label="Item 3" />
-    </TreeItemDraggable>
-  </TreeViewDraggable>
+  <div style={{ paddingBottom: 1000 }}>
+    <TreeViewDraggable {...args}>
+      <TreeItemDraggable nodeId="item-1" label="Item 1" />
+      <TreeItemDraggable nodeId="item-2" label="Item 2">
+        <TreeItemDraggable nodeId="item-2-1" label="Item 2.1" />
+        <TreeItemDraggable nodeId="item-2-2" label="Item 2.2" />
+        <TreeItemDraggable nodeId="item-3" label="Item 3" />
+      </TreeItemDraggable>
+    </TreeViewDraggable>
+  </div>
 );
 
 export const Basic = Template.bind({});
-Basic.args = {};
+Basic.args = {
+  allowDragging: true,
+  defaultExpanded: ["item-2", "item-2-1"],
+};
