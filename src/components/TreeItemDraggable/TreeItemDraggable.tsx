@@ -7,7 +7,7 @@ import useStyles from "./TreeItemDraggable.styles";
 import useScrollOnMove from "../../hooks/useScrollOnMove";
 import { getScrollContaneir } from "../../utils/htmlUtils";
 
-const LONG_PRESS = 500;
+const WAIT_TIME = 500;
 
 function TreeItemDraggable(props: TreeItemProps): JSX.Element {
   const {
@@ -147,7 +147,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
           startScrollOnMove(scrollContainer);
           document.addEventListener("click", clickListener);
           document.addEventListener("pointermove", pointerMoveListener);
-        }, LONG_PRESS);
+        }, WAIT_TIME);
       }
       if (onMouseDown) {
         onMouseDown(event);
@@ -205,7 +205,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
           const scrollContainer = getScrollContaneir(li);
           startScrollOnMove(scrollContainer);
           document.addEventListener("pointermove", pointerMoveListener);
-        }, LONG_PRESS);
+        }, WAIT_TIME);
       }
       if (onTouchStart) {
         onTouchStart(event);
@@ -221,10 +221,48 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
     ]
   );
 
-  const handleKeyDown = React.useCallback(() => {
-    // event.stopPropagation();
-    // console.log("key down", event.key);
+  const blurListener = React.useCallback(() => {
+    fromLiRef.current.removeAttribute("data-dragging");
+    rootTreeRef.current.removeAttribute("data-dragging");
+    fromLiRef.current.removeEventListener("blur", blurListener);
+    draggingRef.current = false;
+    rootTreeRef.current = null;
+    fromLiRef.current = null;
   }, []);
+
+  const handleKeyDownCapture = React.useCallback(
+    (event: React.KeyboardEvent) => {
+      if (draggingRef.current) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (event.key === "Escape") {
+          draggingRef.current = false;
+          fromLiRef.current.removeAttribute("data-dragging");
+          fromLiRef.current = null;
+          rootTreeRef.current.removeAttribute("data-dragging");
+          rootTreeRef.current = null;
+        }
+      }
+    },
+    []
+  );
+
+  const handleKeyDown = React.useCallback(
+    (event: React.KeyboardEvent) => {
+      if (event.key === " " && event.ctrlKey) {
+        event.stopPropagation();
+        const li = getNodeElement(event);
+        draggingRef.current = true;
+        fromLiRef.current = li;
+        fromLiRef.current.setAttribute("data-dragging", "true");
+        rootTreeRef.current = getTreeRootElement(li);
+        rootTreeRef.current.setAttribute("data-dragging", "true");
+        li.addEventListener("blur", blurListener);
+      }
+    },
+    [blurListener]
+  );
 
   return (
     <TreeItem
@@ -235,7 +273,8 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
       onMouseDown={handleMouseDown}
       onLabelClick={handleLabelClick}
       onTouchStart={handleTouchStart}
-      onKeyDownCapture={handleKeyDown}
+      onKeyDownCapture={handleKeyDownCapture}
+      onKeyDown={handleKeyDown}
     >
       {children}
     </TreeItem>
