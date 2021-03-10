@@ -1,9 +1,11 @@
-import React, { MouseEvent } from "react";
+import React from "react";
 import TreeItem from "@material-ui/lab/TreeItem";
 
 import { TreeItemProps } from "@material-ui/lab/TreeItem/TreeItem.d";
 import TreeViewDraggableContext from "../TreeViewDraggable/TreeViewDraggableContext";
 import useStyles from "./TreeItemDraggable.styles";
+import useScrollOnMove from "../../hooks/useScrollOnMove";
+import { getScrollContaneir } from "../../utils/htmlUtils";
 
 const LONG_PRESS = 500;
 
@@ -17,57 +19,57 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
     ...other
   } = props;
 
+  const { startScrollOnMove, endScrollOnMove } = useScrollOnMove();
+
   const classes = useStyles();
 
-  const {
-    allowDragging,
-    startDragging,
-    stopDragging,
-    fromNodeId,
-  } = React.useContext(TreeViewDraggableContext);
+  const { allowDragging } = React.useContext(TreeViewDraggableContext);
 
   const timeoutRef = React.useRef<NodeJS.Timeout>(null);
 
-  const dragging = nodeId === fromNodeId;
+  const draggingRef = React.useRef<boolean>(false);
 
-  const fromLiRef = React.useRef(null);
+  const rootTreeRef = React.useRef<HTMLUListElement>(null);
 
-  const toLiRef = React.useRef(null);
+  const fromLiRef = React.useRef<HTMLLIElement>(null);
 
-  const positionRef = React.useRef(null);
+  const toLiRef = React.useRef<HTMLLIElement>(null);
+
+  const toNodeIdRef = React.useRef<string>(null);
+
+  const positionRef = React.useRef<"before" | "after" | "inside">(null);
 
   const pointerMoveListener = React.useCallback((event) => {
-    clearTimeout(timeoutRef.current);
     const clientX = event.clientX;
     const clientY = event.clientY;
 
-    const target = document
+    const li = document
       .elementFromPoint(clientX, clientY)
-      .closest(".MuiTreeItem-root");
+      .closest(".MuiTreeItem-root") as HTMLLIElement;
+
     if (toLiRef.current) {
       toLiRef.current.classList.remove("drop", positionRef.current);
     }
-    toLiRef.current = target;
+    toLiRef.current = li;
 
-    if (!target) {
+    if (!li) {
       return;
     }
 
-    const targetNodeId = target.getAttribute("data-nodeid");
+    toNodeIdRef.current = li.getAttribute("data-nodeid");
 
-    const expanded = Array.from(target.children).some((elem) =>
+    const expanded = Array.from(li.children).some((elem) =>
       elem.classList.contains("MuiTreeItem-group")
     );
 
-    const position = getDropPosition(target, clientX, clientY);
+    const position = getDropPosition(li, clientX, clientY);
     positionRef.current = position;
 
     if (
-      !fromLiRef.current.contains(target) &&
+      !fromLiRef.current.contains(li) &&
       !(expanded && position === "after")
     ) {
       toLiRef.current.classList.add("drop", positionRef.current);
-      console.log(targetNodeId, position);
     }
   }, []);
 
@@ -82,31 +84,37 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
   }, [mouseMoveListener]);
 
   const clickListener = React.useCallback(() => {
-    document.removeEventListener("click", clickListener);
-    document.removeEventListener("pointermove", pointerMoveListener);
-    stopDragging();
+    rootTreeRef.current.removeAttribute("data-dragging");
+    fromLiRef.current.removeAttribute("data-dragging");
+    fromLiRef.current = null;
     if (toLiRef.current) {
       toLiRef.current.classList.remove("drop", positionRef.current);
+      toLiRef.current = null;
     }
-    fromLiRef.current = null;
-    toLiRef.current = null;
-  }, [stopDragging, pointerMoveListener]);
+    endScrollOnMove();
+    document.removeEventListener("click", clickListener);
+    document.removeEventListener("pointermove", pointerMoveListener);
+  }, [endScrollOnMove, pointerMoveListener]);
 
   const handleMouseDown = React.useCallback(
     (event) => {
       if (allowDragging) {
         event.stopPropagation();
+        const li = getNodeElement(event);
         document.addEventListener("mouseup", mouseUpListener);
         document.addEventListener("mousemove", mouseMoveListener);
-        const target = event.currentTarget as HTMLElement;
         timeoutRef.current = setTimeout(() => {
+          draggingRef.current = true;
+          fromLiRef.current = li;
+          fromLiRef.current.setAttribute("data-dragging", "true");
+          rootTreeRef.current = getTreeRootElement(li);
+          rootTreeRef.current.setAttribute("data-dragging", "true");
+          const scrollContainer = getScrollContaneir(li);
+          startScrollOnMove(scrollContainer);
           document.addEventListener("click", clickListener);
           document.addEventListener("pointermove", pointerMoveListener);
-          startDragging(target, nodeId);
-          fromLiRef.current = target.closest(".MuiTreeItem-root");
         }, LONG_PRESS);
       }
-
       if (onMouseDown) {
         onMouseDown(event);
       }
@@ -116,27 +124,44 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
       clickListener,
       mouseMoveListener,
       mouseUpListener,
-      nodeId,
       onMouseDown,
-      startDragging,
       pointerMoveListener,
+      startScrollOnMove,
     ]
   );
 
   const handleLabelClick = React.useCallback(
     (event) => {
-      if (dragging) {
+      if (draggingRef.current) {
         event.stopPropagation();
+        draggingRef.current = false;
+        if (fromLiRef.current) {
+          fromLiRef.current.removeAttribute("data-dragging");
+          fromLiRef.current = null;
+        }
+        if (toLiRef.current) {
+          toLiRef.current.classList.remove("drop", positionRef.current);
+          toLiRef.current = null;
+        }
+        if (rootTreeRef.current) {
+          rootTreeRef.current.removeAttribute("data-dragging");
+        }
+        endScrollOnMove();
         document.removeEventListener("click", clickListener);
-        stopDragging();
+        document.removeEventListener("pointermove", pointerMoveListener);
       }
 
       if (onLabelClick) {
         onLabelClick(event);
       }
     },
-    [clickListener, dragging, onLabelClick, stopDragging]
+    [clickListener, endScrollOnMove, onLabelClick, pointerMoveListener]
   );
+
+  const handleKeyDown = React.useCallback((event) => {
+    // event.stopPropagation();
+    // console.log("key down", event.key);
+  }, []);
 
   const touchMoveListener = React.useCallback(() => {
     clearTimeout(timeoutRef.current);
@@ -144,16 +169,18 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
 
   const touchEndListener = React.useCallback(() => {
     clearTimeout(timeoutRef.current);
-    stopDragging();
-    document.removeEventListener("touchend", touchEndListener);
-    document.removeEventListener("touchmove", touchMoveListener);
-    document.removeEventListener("pointermove", pointerMoveListener);
+
     if (toLiRef.current) {
       toLiRef.current.classList.remove("drop", positionRef.current);
     }
+
     fromLiRef.current = null;
     toLiRef.current = null;
-  }, [stopDragging, touchMoveListener, pointerMoveListener]);
+
+    document.removeEventListener("touchend", touchEndListener);
+    document.removeEventListener("touchmove", touchMoveListener);
+    document.removeEventListener("pointermove", pointerMoveListener);
+  }, [touchMoveListener, pointerMoveListener]);
 
   const handleTouchStart = React.useCallback(
     (event) => {
@@ -163,7 +190,6 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
         document.addEventListener("touchmove", touchMoveListener);
         const target = event.currentTarget as HTMLElement;
         timeoutRef.current = setTimeout(() => {
-          startDragging(target, nodeId);
           document.addEventListener("pointermove", pointerMoveListener);
           fromLiRef.current = target.closest(".MuiTreeItem-root");
         }, LONG_PRESS);
@@ -175,9 +201,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
     },
     [
       allowDragging,
-      nodeId,
       onTouchStart,
-      startDragging,
       touchEndListener,
       touchMoveListener,
       pointerMoveListener,
@@ -188,16 +212,24 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
     <TreeItem
       {...other}
       classes={classes}
-      data-dragging={dragging}
       data-nodeid={nodeId}
       nodeId={nodeId}
       onMouseDown={handleMouseDown}
       onLabelClick={handleLabelClick}
       onTouchStart={handleTouchStart}
+      onKeyDownCapture={handleKeyDown}
     >
       {children}
     </TreeItem>
   );
+}
+
+function getNodeElement(event) {
+  return event.currentTarget.closest(".MuiTreeItem-root") as HTMLLIElement;
+}
+
+function getTreeRootElement(li: HTMLLIElement) {
+  return li.closest(".MuiTreeView-root") as HTMLUListElement;
 }
 
 function getDropPosition(target, clientX, clientY) {
