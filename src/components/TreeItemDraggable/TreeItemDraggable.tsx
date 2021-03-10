@@ -23,7 +23,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
 
   const classes = useStyles();
 
-  const { allowDragging } = React.useContext(TreeViewDraggableContext);
+  const { allowDragging, onDrop } = React.useContext(TreeViewDraggableContext);
 
   const timeoutRef = React.useRef<NodeJS.Timeout>(null);
 
@@ -39,32 +39,37 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
 
   const positionRef = React.useRef<"before" | "after" | "inside">(null);
 
+  const drop = React.useCallback(() => {
+    if (onDrop && toNodeIdRef.current && positionRef.current) {
+      onDrop({
+        fromNodeId: nodeId,
+        toNodeId: toNodeIdRef.current,
+        position: positionRef.current,
+      });
+    }
+  }, [onDrop, nodeId]);
+
   const pointerMoveListener = React.useCallback((event) => {
     const clientX = event.clientX;
     const clientY = event.clientY;
-
     const li = document
       .elementFromPoint(clientX, clientY)
       .closest(".MuiTreeItem-root") as HTMLLIElement;
-
     if (toLiRef.current) {
       toLiRef.current.classList.remove("drop", positionRef.current);
     }
     toLiRef.current = li;
-
     if (!li) {
+      toNodeIdRef.current = null;
+      positionRef.current = null;
       return;
     }
-
     toNodeIdRef.current = li.getAttribute("data-nodeid");
-
     const expanded = Array.from(li.children).some((elem) =>
       elem.classList.contains("MuiTreeItem-group")
     );
-
     const position = getDropPosition(li, clientX, clientY);
     positionRef.current = position;
-
     if (
       !fromLiRef.current.contains(li) &&
       !(expanded && position === "after")
@@ -94,7 +99,8 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
     endScrollOnMove();
     document.removeEventListener("click", clickListener);
     document.removeEventListener("pointermove", pointerMoveListener);
-  }, [endScrollOnMove, pointerMoveListener]);
+    drop();
+  }, [endScrollOnMove, pointerMoveListener, drop]);
 
   const handleLabelClick = React.useCallback(
     (event) => {
@@ -115,13 +121,13 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
         endScrollOnMove();
         document.removeEventListener("click", clickListener);
         document.removeEventListener("pointermove", pointerMoveListener);
+        drop();
       }
-
       if (onLabelClick) {
         onLabelClick(event);
       }
     },
-    [clickListener, endScrollOnMove, onLabelClick, pointerMoveListener]
+    [clickListener, endScrollOnMove, onLabelClick, pointerMoveListener, drop]
   );
 
   const handleMouseDown = React.useCallback(
@@ -164,7 +170,6 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
 
   const touchEndListener = React.useCallback(() => {
     clearTimeout(timeoutRef.current);
-
     draggingRef.current = false;
     if (fromLiRef.current) {
       fromLiRef.current.removeAttribute("data-dragging");
@@ -177,13 +182,12 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
     if (rootTreeRef.current) {
       rootTreeRef.current.removeAttribute("data-dragging");
     }
-
     endScrollOnMove();
-
     document.removeEventListener("touchend", touchEndListener);
     document.removeEventListener("touchmove", touchMoveListener);
     document.removeEventListener("pointermove", pointerMoveListener);
-  }, [endScrollOnMove, touchMoveListener, pointerMoveListener]);
+    drop();
+  }, [endScrollOnMove, touchMoveListener, pointerMoveListener, drop]);
 
   const handleTouchStart = React.useCallback(
     (event) => {
@@ -203,7 +207,6 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
           document.addEventListener("pointermove", pointerMoveListener);
         }, LONG_PRESS);
       }
-
       if (onTouchStart) {
         onTouchStart(event);
       }

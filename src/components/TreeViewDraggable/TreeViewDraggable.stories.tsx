@@ -27,4 +27,5 @@ export const Basic = Template.bind({});
 Basic.args = {
   allowDragging: true,
   defaultExpanded: ["item-2", "item-2-1"],
+  onDrop: (params) => console.log(params),
 };
