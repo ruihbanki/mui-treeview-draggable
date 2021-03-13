@@ -11,7 +11,7 @@ export default {
 } as Meta;
 
 const Template: Story<TreeViewDraggableProps> = (args) => (
-  <div style={{ paddingBottom: 1000 }}>
+  <div style={{ paddingBottom: 10 }}>
     <TreeViewDraggable {...args}>
       <TreeItemDraggable nodeId="item-1" label="Item 1" />
       <TreeItemDraggable nodeId="item-2" label="Item 2">
