@@ -35,6 +35,8 @@ function useDragging(options: UseDraggingOptions): UseDraggingResult {
 
   const handleDocumentKeyDown = React.useCallback((event: KeyboardEvent) => {
     event.stopPropagation();
+    event.preventDefault();
+    
     switch(event.key) {         
     case "Escape":           
       if (!startedRef.current) {

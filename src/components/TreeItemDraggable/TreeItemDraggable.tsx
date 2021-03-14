@@ -149,7 +149,13 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
   );
 
   const handleDragKey = React.useCallback((event: KeyboardEvent) => {
-    console.log("key", event.target);
+    console.log("key", event.key);
+
+    const { treeViewElement } = draggingStateRef.current;
+
+    const nodesElements = treeViewElement.querySelectorAll(
+      ".MuiTreeItem-root[data-nodeid]"
+    );
   }, []);
 
   const handleDragEnd = React.useCallback(() => {
