@@ -29,7 +29,7 @@ const Template: Story<TreeViewDraggableProps> = (args) => (
 
 export const Basic = Template.bind({});
 Basic.args = {
-  allowDragging: true,
+  draggable: true,
   defaultExpanded: ["item-2", "item-2-2", "item-2-2-1"],
   onDrop: (params) => console.log(params),
 };

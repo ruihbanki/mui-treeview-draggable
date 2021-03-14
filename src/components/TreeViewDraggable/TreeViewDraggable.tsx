@@ -6,13 +6,14 @@ import TreeViewDraggableContext from "./TreeViewDraggableContext";
 import useStyles from "./TreeViewDraggable.styles";
 
 function TreeViewDraggable(props: TreeViewDraggableProps): JSX.Element {
-  const { children, allowDragging, onDrop, ...other } = props;
+  const { children, draggable, onDrop, allowDrop, ...other } = props;
 
   const classes = useStyles(props);
 
   const contextValue = {
-    allowDragging,
+    draggable,
     onDrop,
+    allowDrop,
   };
 
   return (
