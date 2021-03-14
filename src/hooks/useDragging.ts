@@ -3,14 +3,16 @@ import React from "react";
 const WAIT_TIME = 300;
 
 interface UseDraggingOptions {
-  active: boolean,
-  onStart: (event: React.MouseEvent | React.TouchEvent | React.KeyboardEvent) => void,
-  onMove: (event: MouseEvent | TouchEvent) => void,
-  onKey: (event: KeyboardEvent) => void,
-  onEnd: (event: MouseEvent | TouchEvent | KeyboardEvent) => void,
-  onMouseDown: (event: React.MouseEvent) => void,
-  onTouchStart: (event: React.TouchEvent) => void,
-  onKeyDown: (event: React.KeyboardEvent) => void,
+  active: boolean;
+  onStart: (
+    event: React.MouseEvent | React.TouchEvent | React.KeyboardEvent
+  ) => void;
+  onMove: (event: MouseEvent | TouchEvent) => void;
+  onKey: (event: KeyboardEvent) => void;
+  onEnd: (event: MouseEvent | TouchEvent | KeyboardEvent) => void;
+  onMouseDown: (event: React.MouseEvent) => void;
+  onTouchStart: (event: React.TouchEvent) => void;
+  onKeyDown: (event: React.KeyboardEvent) => void;
 }
 
 interface UseDraggingResult {
@@ -20,7 +22,16 @@ interface UseDraggingResult {
 }
 
 function useDragging(options: UseDraggingOptions): UseDraggingResult {
-  const { active, onStart, onMove, onKey, onEnd, onMouseDown, onTouchStart, onKeyDown } = options;
+  const {
+    active,
+    onStart,
+    onMove,
+    onKey,
+    onEnd,
+    onMouseDown,
+    onTouchStart,
+    onKeyDown,
+  } = options;
 
   const timeoutRef = React.useRef<NodeJS.Timeout>();
 
@@ -33,46 +44,55 @@ function useDragging(options: UseDraggingOptions): UseDraggingResult {
     document.removeEventListener("click", handleDocumentClick, true);
   }, []);
 
-  const handleDocumentKeyDown = React.useCallback((event: KeyboardEvent) => {
-    event.stopPropagation();
-    event.preventDefault();
-    
-    switch(event.key) {         
-    case "Escape":           
-      if (!startedRef.current) {
-        return;
-      }
-      startedRef.current = false;
-      onEnd(event);
-      document.removeEventListener("keydown", handleDocumentKeyDown, true);
-      break;
-    default:
-      onKey(event);
-      break;
-    }
-  }, [onEnd, onKey]);
+  const handleDocumentKeyDown = React.useCallback(
+    (event: KeyboardEvent) => {
+      event.stopPropagation();
+      event.preventDefault();
 
-  const handleDocumentMouseMove = React.useCallback((event: MouseEvent) => {
-    if (active) {
-      clearTimeout(timeoutRef.current);
-      if (startedRef.current) {
-        onMove(event);
+      switch (event.key) {
+        case "Escape":
+          if (!startedRef.current) {
+            return;
+          }
+          startedRef.current = false;
+          onEnd(event);
+          document.removeEventListener("keydown", handleDocumentKeyDown, true);
+          break;
+        default:
+          onKey(event);
+          break;
       }
-    }
-  }, [active, onMove]);
+    },
+    [onEnd, onKey]
+  );
 
-  const handleDocumentMouseUp = React.useCallback((event: MouseEvent) => {
-    if (active) {
-      clearTimeout(timeoutRef.current);
-      if (startedRef.current) {
-        onEnd(event);
+  const handleDocumentMouseMove = React.useCallback(
+    (event: MouseEvent) => {
+      if (active) {
+        clearTimeout(timeoutRef.current);
+        if (startedRef.current) {
+          onMove(event);
+        }
       }
-      startedRef.current = false;
-      document.removeEventListener("mousemove", handleDocumentMouseMove);
-      document.removeEventListener("mouseup", handleDocumentMouseUp);
-      document.removeEventListener("keydown", handleDocumentKeyDown, true);
-    }
-  }, [active, handleDocumentKeyDown, handleDocumentMouseMove, onEnd]);
+    },
+    [active, onMove]
+  );
+
+  const handleDocumentMouseUp = React.useCallback(
+    (event: MouseEvent) => {
+      if (active) {
+        clearTimeout(timeoutRef.current);
+        if (startedRef.current) {
+          onEnd(event);
+        }
+        startedRef.current = false;
+        document.removeEventListener("mousemove", handleDocumentMouseMove);
+        document.removeEventListener("mouseup", handleDocumentMouseUp);
+        document.removeEventListener("keydown", handleDocumentKeyDown, true);
+      }
+    },
+    [active, handleDocumentKeyDown, handleDocumentMouseMove, onEnd]
+  );
 
   const handleMouseDown = React.useCallback(
     (event: React.MouseEvent) => {
@@ -87,33 +107,47 @@ function useDragging(options: UseDraggingOptions): UseDraggingResult {
           onStart(event);
         }, WAIT_TIME);
       }
-      if(onMouseDown) {
+      if (onMouseDown) {
         onMouseDown(event);
       }
     },
-    [active, onMouseDown, handleDocumentMouseMove, handleDocumentMouseUp, handleDocumentKeyDown, handleDocumentClick, onStart]
+    [
+      active,
+      onMouseDown,
+      handleDocumentMouseMove,
+      handleDocumentMouseUp,
+      handleDocumentKeyDown,
+      handleDocumentClick,
+      onStart,
+    ]
   );
 
-  const handleDocumentTouchMove = React.useCallback((event: TouchEvent) => {
-    if (active) {
-      clearTimeout(timeoutRef.current);
-      if (startedRef.current) {
-        onMove(event);
+  const handleDocumentTouchMove = React.useCallback(
+    (event: TouchEvent) => {
+      if (active) {
+        clearTimeout(timeoutRef.current);
+        if (startedRef.current) {
+          onMove(event);
+        }
       }
-    }
-  }, [active, onMove]);
+    },
+    [active, onMove]
+  );
 
-  const handleDocumentTouchEnd = React.useCallback((event: TouchEvent) => {
-    if (active) {
-      clearTimeout(timeoutRef.current);
-      if (startedRef.current) {
-        onEnd(event);
+  const handleDocumentTouchEnd = React.useCallback(
+    (event: TouchEvent) => {
+      if (active) {
+        clearTimeout(timeoutRef.current);
+        if (startedRef.current) {
+          onEnd(event);
+        }
+        startedRef.current = false;
+        document.removeEventListener("touchmove", handleDocumentTouchMove);
+        document.removeEventListener("touchend", handleDocumentTouchEnd);
       }
-      startedRef.current = false;
-      document.removeEventListener("touchmove", handleDocumentTouchMove);
-      document.removeEventListener("touchend", handleDocumentTouchEnd);
-    }
-  }, [active, handleDocumentTouchMove, onEnd]);
+    },
+    [active, handleDocumentTouchMove, onEnd]
+  );
 
   const handleTouchStart = React.useCallback(
     (event: React.TouchEvent) => {
@@ -130,7 +164,13 @@ function useDragging(options: UseDraggingOptions): UseDraggingResult {
         onTouchStart(event);
       }
     },
-    [active, handleDocumentTouchMove, handleDocumentTouchEnd, onStart, onTouchStart]
+    [
+      active,
+      handleDocumentTouchMove,
+      handleDocumentTouchEnd,
+      onStart,
+      onTouchStart,
+    ]
   );
 
   const handleDocumentKeyUp = React.useCallback(() => {
@@ -144,19 +184,19 @@ function useDragging(options: UseDraggingOptions): UseDraggingResult {
   const handleKeyDown = React.useCallback(
     (event: React.KeyboardEvent) => {
       if (active) {
-        switch(event.key) {
-        case " ":           
-          if (startedRef.current || startedKeyDownRef.current) {
-            return;
-          }          
-          startedKeyDownRef.current = true;
-          document.addEventListener("keyup", handleDocumentKeyUp);
-          timeoutRef.current = setTimeout(() => {
-            startedRef.current = true;
-            onStart(event);
-            document.addEventListener("keydown", handleDocumentKeyDown, true);
-          }, WAIT_TIME);
-          break;          
+        switch (event.key) {
+          case " ":
+            if (startedRef.current || startedKeyDownRef.current) {
+              return;
+            }
+            startedKeyDownRef.current = true;
+            document.addEventListener("keyup", handleDocumentKeyUp);
+            timeoutRef.current = setTimeout(() => {
+              startedRef.current = true;
+              onStart(event);
+              document.addEventListener("keydown", handleDocumentKeyDown, true);
+            }, WAIT_TIME);
+            break;
         }
       }
       if (onKeyDown) {
@@ -176,10 +216,10 @@ function useDragging(options: UseDraggingOptions): UseDraggingResult {
     document.removeEventListener("keyup", handleDocumentKeyUp);
   }, [
     handleDocumentClick,
-    handleDocumentMouseMove, 
-    handleDocumentMouseUp, 
-    handleDocumentTouchEnd, 
-    handleDocumentTouchMove, 
+    handleDocumentMouseMove,
+    handleDocumentMouseUp,
+    handleDocumentTouchEnd,
+    handleDocumentTouchMove,
     handleDocumentKeyUp,
     handleDocumentKeyDown,
   ]);

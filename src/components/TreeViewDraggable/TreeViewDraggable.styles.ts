@@ -5,10 +5,10 @@ const useStyles = makeStyles({
     "&[data-dragging=true]": {
       userSelect: "none",
       "& .MuiTreeItem-label:hover": {
-        background: "transparent !important"
-      }
+        background: "transparent !important",
+      },
     },
-  }
+  },
 });
 
 export default useStyles;

@@ -1,8 +1,8 @@
 import React from "react";
 
 interface Result {
-  startScrollOnMove: (el: Element) => void,
-  endScrollOnMove: () => void
+  startScrollOnMove: (el: Element) => void;
+  endScrollOnMove: () => void;
 }
 
 function useScrollOnMove(): Result {
@@ -16,7 +16,7 @@ function useScrollOnMove(): Result {
     event.preventDefault();
     pointerRef.current = {
       y: event.clientY,
-      x: event.clientX
+      x: event.clientX,
     };
   }, []);
 
@@ -36,7 +36,7 @@ function useScrollOnMove(): Result {
     if (containerRef.current.nodeName === "HTML") {
       rect = {
         top: 0,
-        bottom: clientHeight
+        bottom: clientHeight,
       };
     }
 
@@ -59,7 +59,7 @@ function useScrollOnMove(): Result {
       containerRef.current = el;
       containerRef.current.addEventListener("pointermove", handlePointerMove);
       containerRef.current.addEventListener("touchmove", handleTouchMove, {
-        passive: false
+        passive: false,
       });
       timeoutRef.current = setInterval(() => {
         scrollContainer();
@@ -82,7 +82,7 @@ function useScrollOnMove(): Result {
 
   return {
     startScrollOnMove,
-    endScrollOnMove
+    endScrollOnMove,
   };
 }
 

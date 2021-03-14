@@ -7,21 +7,27 @@ interface UseStopDocumentPropagationResult {
 
 function useDocumentEventStopPropagation(): UseStopDocumentPropagationResult {
   const handler = React.useCallback((event: Event) => {
-    console.log("stop");    
+    console.log("stop");
     event.stopPropagation();
   }, []);
 
-  const startDocumentEventStopPropagation = React.useCallback((types: string[]) => {
-    types.forEach(type => {
-      document.addEventListener(type, handler, true);
-    });
-  }, [handler]);
+  const startDocumentEventStopPropagation = React.useCallback(
+    (types: string[]) => {
+      types.forEach((type) => {
+        document.addEventListener(type, handler, true);
+      });
+    },
+    [handler]
+  );
 
-  const stopDocumentEventStopPropagation = React.useCallback((types: string[]) => {
-    types.forEach(type => {
-      document.removeEventListener(type, handler, true);
-    });
-  }, [handler]);
+  const stopDocumentEventStopPropagation = React.useCallback(
+    (types: string[]) => {
+      types.forEach((type) => {
+        document.removeEventListener(type, handler, true);
+      });
+    },
+    [handler]
+  );
 
   return {
     startDocumentEventStopPropagation,
