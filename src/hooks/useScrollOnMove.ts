@@ -45,11 +45,11 @@ function useScrollOnMove(): Result {
     const bottomDist = rect.bottom - y;
 
     if (topDist > 0 && topDist < limit) {
-      const delta = (limit - topDist) * 0.4;
+      const delta = (limit - topDist) * 0.8;
       containerRef.current.scrollTop -= delta;
     }
     if (bottomDist > 0 && bottomDist < limit) {
-      const delta = (limit - bottomDist) * 0.4;
+      const delta = (limit - bottomDist) * 0.8;
       containerRef.current.scrollTop += delta;
     }
   }, []);

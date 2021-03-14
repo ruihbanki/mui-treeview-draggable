@@ -1,6 +1,6 @@
 import React from "react";
 
-const WAIT_TIME = 500;
+const WAIT_TIME = 300;
 
 interface UseDraggingOptions {
   active: boolean,
