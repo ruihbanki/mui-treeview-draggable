@@ -1,7 +1,7 @@
 import React from "react";
 
 interface Result {
-  startScrollOnMove: (el: HTMLElement) => void,
+  startScrollOnMove: (el: Element) => void,
   endScrollOnMove: () => void
 }
 
@@ -55,7 +55,7 @@ function useScrollOnMove(): Result {
   }, []);
 
   const startScrollOnMove = React.useCallback(
-    (el) => {
+    (el: Element) => {
       containerRef.current = el;
       containerRef.current.addEventListener("pointermove", handlePointerMove);
       containerRef.current.addEventListener("touchmove", handleTouchMove, {
