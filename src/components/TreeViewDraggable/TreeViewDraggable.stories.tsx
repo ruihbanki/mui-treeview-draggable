@@ -23,6 +23,7 @@ const Template: Story<TreeViewDraggableProps> = (args) => (
         </TreeItemDraggable>
       </TreeItemDraggable>
       <TreeItemDraggable nodeId="item-3" label="Item 3" />
+      <TreeItemDraggable nodeId="item-4" label="Item 4" />
     </TreeViewDraggable>
   </div>
 );

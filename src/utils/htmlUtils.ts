@@ -13,7 +13,7 @@ function hasScrollbar(el: Element) {
   return el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth;
 }
 
-export function getClientPosition(
+export function getEventClientPosition(
   event: MouseEvent | TouchEvent
 ): { clientX: number; clientY: number } {
   let clientX: number;

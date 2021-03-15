@@ -6,8 +6,14 @@ import TreeViewDraggableContext from "../TreeViewDraggable/TreeViewDraggableCont
 import useStyles from "./TreeItemDraggable.styles";
 import useDragging from "../../hooks/useDragging";
 import useScrollOnMove from "../../hooks/useScrollOnMove";
-import { getScrollContaneir, getClientPosition } from "../../utils/htmlUtils";
-import { getDropPosition } from "./TreeItemDraggable.helper";
+import {
+  getScrollContaneir,
+  getEventClientPosition,
+} from "../../utils/htmlUtils";
+import {
+  createDropTargetList,
+  getDropPosition,
+} from "./TreeItemDraggable.helper";
 
 type Position = "before" | "after" | "inside";
 
@@ -20,6 +26,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
     onKeyDown,
     ...other
   } = props;
+
   const { startScrollOnMove, endScrollOnMove } = useScrollOnMove();
 
   const classes = useStyles();
@@ -44,13 +51,15 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
     toNodeId: null,
   });
 
+  const dropTargetListRef = React.useRef<
+    { position: Position; toItemElement: Element }[]
+  >([]);
+
   const allowDropInternal = React.useCallback(
-    (
-      toItemElementParam: Element,
-      positionParam: Position,
-      toNodeIdParam: string
-    ): boolean => {
+    (toItemElementParam: Element, positionParam: Position): boolean => {
       const { fromItemElement } = draggingStateRef.current;
+
+      const toNodeId = toItemElementParam.getAttribute("data-nodeid");
 
       if (fromItemElement.contains(toItemElementParam)) {
         return false;
@@ -60,7 +69,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
         allowDrop &&
         !allowDrop({
           fromNodeId: nodeId,
-          toNodeId: toNodeIdParam,
+          toNodeId: toNodeId,
           position: positionParam,
         })
       ) {
@@ -85,16 +94,14 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
   }, []);
 
   const setDropTarget = React.useCallback(
-    (
-      toItemElementParam: Element,
-      positionParam: Position,
-      toNodeIdParam: string
-    ): void => {
+    (toItemElementParam: Element, positionParam: Position): void => {
       clearDropTarget();
 
       draggingStateRef.current.toItemElement = toItemElementParam;
       draggingStateRef.current.position = positionParam;
-      draggingStateRef.current.toNodeId = toNodeIdParam;
+      draggingStateRef.current.toNodeId = toItemElementParam.getAttribute(
+        "data-nodeid"
+      );
 
       toItemElementParam.classList.add("drop", positionParam);
     },
@@ -102,7 +109,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
   );
 
   const handleDragStart = React.useCallback(
-    (event: React.MouseEvent | React.TouchEvent) => {
+    (event) => {
       const fromItemElement = (event.target as Element).closest(
         ".MuiTreeItem-root"
       );
@@ -120,14 +127,19 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
 
       fromItemElement.setAttribute("data-dragging", "true");
       treeViewElement.setAttribute("data-dragging", "true");
-      startScrollOnMove(scrollContainer);
+
+      if (event.type !== "keydown") {
+        startScrollOnMove(scrollContainer);
+      } else {
+        dropTargetListRef.current = createDropTargetList(treeViewElement);
+      }
     },
     [startScrollOnMove]
   );
 
   const handleDragMove = React.useCallback(
     (event: MouseEvent | TouchEvent) => {
-      const { clientX, clientY } = getClientPosition(event);
+      const { clientX, clientY } = getEventClientPosition(event);
 
       const nextToItemElement = document
         .elementFromPoint(clientX, clientY)
@@ -139,47 +151,78 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
       }
 
       const nextPosition = getDropPosition(nextToItemElement, clientX, clientY);
-      const nextToNodeId = nextToItemElement.getAttribute("data-nodeid");
 
-      if (allowDropInternal(nextToItemElement, nextPosition, nextToNodeId)) {
-        setDropTarget(nextToItemElement, nextPosition, nextToNodeId);
+      if (allowDropInternal(nextToItemElement, nextPosition)) {
+        setDropTarget(nextToItemElement, nextPosition);
       }
     },
     [allowDropInternal, clearDropTarget, setDropTarget]
   );
 
-  const handleDragKey = React.useCallback((event: KeyboardEvent) => {
-    console.log("key", event.key);
+  const handleDragKey = React.useCallback(
+    (event: KeyboardEvent) => {
+      const { toItemElement, position } = draggingStateRef.current;
 
-    const { treeViewElement } = draggingStateRef.current;
+      const curIndex = dropTargetListRef.current.findIndex(
+        (item) =>
+          (item.toItemElement === toItemElement &&
+            item.position === position) ||
+          !position
+      );
+      let nextIndex = curIndex;
 
-    const nodesElements = treeViewElement.querySelectorAll(
-      ".MuiTreeItem-root[data-nodeid]"
-    );
-  }, []);
+      switch (event.key) {
+        case "ArrowUp": {
+          if (nextIndex > 0) {
+            nextIndex--;
+          }
+          break;
+        }
+        case "ArrowDown": {
+          if (nextIndex < dropTargetListRef.current.length - 1) {
+            nextIndex++;
+          }
+          break;
+        }
+      }
 
-  const handleDragEnd = React.useCallback(() => {
-    const {
-      fromItemElement,
-      toItemElement,
-      treeViewElement,
-      toNodeId,
-      position,
-    } = draggingStateRef.current;
+      if (nextIndex !== -1) {
+        const nextDropTarget = dropTargetListRef.current[nextIndex];
+        console.log(nextDropTarget);
 
-    fromItemElement.removeAttribute("data-dragging");
-    treeViewElement.removeAttribute("data-dragging");
+        setDropTarget(nextDropTarget.toItemElement, nextDropTarget.position);
+      }
+    },
+    [setDropTarget]
+  );
 
-    if (toItemElement) {
-      toItemElement.classList.remove("drop", position);
-    }
+  const handleDragEnd = React.useCallback(
+    (event) => {
+      const {
+        fromItemElement,
+        toItemElement,
+        treeViewElement,
+        toNodeId,
+        position,
+      } = draggingStateRef.current;
 
-    if (onDrop && toNodeId) {
-      onDrop({ fromNodeId: nodeId, toNodeId, position });
-    }
+      fromItemElement.removeAttribute("data-dragging");
+      treeViewElement.removeAttribute("data-dragging");
 
-    endScrollOnMove();
-  }, [endScrollOnMove, nodeId, onDrop]);
+      if (toItemElement) {
+        toItemElement.classList.remove("drop", position);
+      }
+
+      if (onDrop && toNodeId && position) {
+        onDrop({ fromNodeId: nodeId, toNodeId, position });
+      }
+
+      if (event.type !== "keydown") {
+        endScrollOnMove();
+      }
+    },
+    [endScrollOnMove, nodeId, onDrop]
+  );
 
   const { handleMouseDown, handleTouchStart, handleKeyDown } = useDragging({
     active: draggable,
