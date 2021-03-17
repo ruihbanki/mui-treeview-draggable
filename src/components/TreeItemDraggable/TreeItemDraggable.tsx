@@ -1,21 +1,20 @@
 import React from "react";
 import TreeItem from "@material-ui/lab/TreeItem";
-
 import { TreeItemProps } from "@material-ui/lab/TreeItem/TreeItem.d";
-import TreeViewDraggableContext from "../TreeViewDraggable/TreeViewDraggableContext";
-import useStyles from "./TreeItemDraggable.styles";
-import useDragging from "../../hooks/useDragging";
-import useScrollOnMove from "../../hooks/useScrollOnMove";
+
 import {
   getScrollContaneir,
   getEventClientPosition,
 } from "../../utils/htmlUtils";
+import useDragging from "../../hooks/useDragging";
+import useScrollOnMove from "../../hooks/useScrollOnMove";
+import { Position } from "../TreeViewDraggable/TreeViewDraggable.types";
+import TreeViewDraggableContext from "../TreeViewDraggable/TreeViewDraggableContext";
+import useStyles from "./TreeItemDraggable.styles";
 import {
   createDropTargetList,
   getDropPosition,
 } from "./TreeItemDraggable.helper";
-
-type Position = "before" | "after" | "inside";
 
 function TreeItemDraggable(props: TreeItemProps): JSX.Element {
   const {

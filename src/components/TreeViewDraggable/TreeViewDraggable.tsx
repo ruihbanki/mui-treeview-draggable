@@ -1,7 +1,7 @@
 import React from "react";
 import TreeView from "@material-ui/lab/TreeView";
 
-import TreeViewDraggableProps from "./TreeViewDraggableProps";
+import { TreeViewDraggableProps } from "./TreeViewDraggable.types";
 import TreeViewDraggableContext from "./TreeViewDraggableContext";
 import useStyles from "./TreeViewDraggable.styles";
 

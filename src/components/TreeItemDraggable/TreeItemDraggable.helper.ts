@@ -1,9 +1,5 @@
-type Position = "before" | "after" | "inside";
-
-interface DropTarget {
-  position: Position; 
-  toItemElement: Element;
-}
+import { Position } from "../TreeViewDraggable/TreeViewDraggable.types";
+import { DropTarget } from "./TreeItemDraggable.types";
 
 export function createDropTargetList(rootTreeNode: Element): DropTarget[] {
   const result: DropTarget[] = [];
@@ -15,11 +11,6 @@ export function createDropTargetList(rootTreeNode: Element): DropTarget[] {
   });
 
   addToDropTargetList(result, firstNode);
-
-  console.log(JSON.stringify(result.map(item => ({
-    position: item.position,
-    id: item.toItemElement.getAttribute("data-nodeid"),
-  })), null, 2));
 
   return result;
 }
