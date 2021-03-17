@@ -65,3 +65,21 @@ export function getDropPosition(target: Element, clientX: number, clientY:number
 export function getTreeRootElement(li: HTMLLIElement): Element {
   return li.closest(".MuiTreeView-root") as HTMLUListElement;
 }
+
+export function createPositionA11y(): void {
+  const a11yElem: Element = document.createElement("div");
+  a11yElem.setAttribute("id", "treeview-drop-position-root");
+  a11yElem.setAttribute("aria-hidden", "true");
+  a11yElem.setAttribute("style", "position:absolute; left: -99999px; overflow: hidden; opacity:0;");
+  a11yElem.innerHTML = `
+    <p id="treeview-drop-position-before">Before</p>
+    <p id="treeview-drop-position-after">After</p>
+    <p id="treeview-drop-position-inside">Inside</p>
+  `;
+  document.body.appendChild(a11yElem);
+}
+
+export function destroyPositionA11y(): void {
+  const a11yElem: Element = document.getElementById("treeview-drop-position-root");
+  a11yElem.parentNode.removeChild(a11yElem);
+}

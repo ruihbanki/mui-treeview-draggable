@@ -13,6 +13,8 @@ import TreeViewDraggableContext from "../TreeViewDraggable/TreeViewDraggableCont
 import useStyles from "./TreeItemDraggable.styles";
 import {
   createDropTargetList,
+  createPositionA11y,
+  destroyPositionA11y,
   getDropPosition,
 } from "./TreeItemDraggable.helper";
 
@@ -96,13 +98,16 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
     (toItemElementParam: Element, positionParam: Position): void => {
       clearDropTarget();
 
+      const toNodeId = toItemElementParam.getAttribute("data-nodeid");
       draggingStateRef.current.toItemElement = toItemElementParam;
       draggingStateRef.current.position = positionParam;
-      draggingStateRef.current.toNodeId = toItemElementParam.getAttribute(
-        "data-nodeid"
-      );
+      draggingStateRef.current.toNodeId = toNodeId;
 
       toItemElementParam.classList.add("drop", positionParam);
+
+      const { fromItemElement } = draggingStateRef.current;
+      const describedby = `treeview-drop-position-${positionParam} ${toNodeId}`;
+      fromItemElement.setAttribute("aria-describedby", describedby);
     },
     [clearDropTarget]
   );
@@ -131,6 +136,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
         startScrollOnMove(scrollContainer);
       } else {
         dropTargetListRef.current = createDropTargetList(treeViewElement);
+        createPositionA11y();
       }
     },
     [startScrollOnMove]
@@ -218,6 +224,8 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
 
       if (event.type !== "keydown") {
         endScrollOnMove();
+      } else {
+        destroyPositionA11y();
       }
     },
     [endScrollOnMove, nodeId, onDrop]
@@ -244,6 +252,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
       onKeyDown={handleKeyDown}
+      aria-grabbed={draggable ? false : undefined}
     >
       {children}
     </TreeItem>
