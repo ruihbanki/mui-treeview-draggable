@@ -1,6 +1,6 @@
 import { Position } from "../TreeViewDraggable/TreeViewDraggable.types";
 
 export interface DropTarget {
-  position: Position; 
+  position: Position;
   toItemElement: Element;
 }

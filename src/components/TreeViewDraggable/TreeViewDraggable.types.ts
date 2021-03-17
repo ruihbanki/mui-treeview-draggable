@@ -24,4 +24,5 @@ type TreeViewDraggablePropsBase = {
   }) => boolean;
 };
 
-export type TreeViewDraggableProps = MuiTreeViewProps & TreeViewDraggablePropsBase;
+export type TreeViewDraggableProps = MuiTreeViewProps &
+  TreeViewDraggablePropsBase;
