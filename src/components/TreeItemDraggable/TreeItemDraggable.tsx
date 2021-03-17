@@ -193,21 +193,18 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
 
       if (nextIndex !== -1) {
         const nextDropTarget = dropTargetListRef.current[nextIndex];
-        console.log(nextDropTarget);
-
         setDropTarget(nextDropTarget.toItemElement, nextDropTarget.position);
       }
     },
     [setDropTarget]
   );
 
-  const handleDragEnd = React.useCallback(
+  const handleDragCancel = React.useCallback(
     (event) => {
       const {
         fromItemElement,
         toItemElement,
         treeViewElement,
-        toNodeId,
         position,
       } = draggingStateRef.current;
 
@@ -218,17 +215,25 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
         toItemElement.classList.remove("drop", position);
       }
 
-      if (onDrop && toNodeId && position) {
-        onDrop({ fromNodeId: nodeId, toNodeId, position });
-      }
-
       if (event.type !== "keydown") {
         endScrollOnMove();
       } else {
         destroyPositionA11y();
       }
     },
-    [endScrollOnMove, nodeId, onDrop]
+    [endScrollOnMove]
+  );
+
+  const handleDrop = React.useCallback(
+    (event) => {
+      handleDragCancel(event);
+
+      const { toNodeId, position } = draggingStateRef.current;
+      if (onDrop && toNodeId && position) {
+        onDrop({ fromNodeId: nodeId, toNodeId, position });
+      }
+    },
+    [handleDragCancel, nodeId, onDrop]
   );
 
   const { handleMouseDown, handleTouchStart, handleKeyDown } = useDragging({
@@ -236,7 +241,8 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
     onStart: handleDragStart,
     onMove: handleDragMove,
     onKey: handleDragKey,
-    onEnd: handleDragEnd,
+    onCancel: handleDragCancel,
+    onDrop: handleDrop,
     onMouseDown,
     onTouchStart,
     onKeyDown,
