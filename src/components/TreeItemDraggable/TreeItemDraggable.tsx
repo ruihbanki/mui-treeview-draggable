@@ -122,7 +122,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
 
       draggingStateRef.current = {
         fromItemElement,
-        toItemElement: null,
+        toItemElement: fromItemElement,
         treeViewElement,
         scrollContainer,
         position: null,
@@ -170,9 +170,8 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
 
       const curIndex = dropTargetListRef.current.findIndex(
         (item) =>
-          (item.toItemElement === toItemElement &&
-            item.position === position) ||
-          !position
+          item.toItemElement === toItemElement &&
+          (item.position === position || !position)
       );
       let nextIndex = curIndex;
 
