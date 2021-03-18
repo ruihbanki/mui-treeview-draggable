@@ -1,6 +1,7 @@
 import React from "react";
 
-type Position = "before" | "after" | "inside";
+import { Position } from "./TreeView.types";
+
 interface Context {
   draggable: boolean;
   onDrop?: ({

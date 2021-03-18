@@ -2,7 +2,7 @@ import { TreeViewProps as MuiTreeViewProps } from "@material-ui/lab/TreeView/Tre
 
 export type Position = "before" | "after" | "inside";
 
-type TreeViewDraggablePropsBase = {
+type TreeViewPropsBase = {
   draggable?: boolean;
   onDrop?: ({
     fromNodeId,
@@ -24,5 +24,4 @@ type TreeViewDraggablePropsBase = {
   }) => boolean;
 };
 
-export type TreeViewDraggableProps = MuiTreeViewProps &
-  TreeViewDraggablePropsBase;
+export type TreeViewProps = MuiTreeViewProps & TreeViewPropsBase;

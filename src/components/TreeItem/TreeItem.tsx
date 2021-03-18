@@ -1,5 +1,5 @@
 import React from "react";
-import TreeItem from "@material-ui/lab/TreeItem";
+import MuiTreeItem from "@material-ui/lab/TreeItem";
 import { TreeItemProps } from "@material-ui/lab/TreeItem/TreeItem.d";
 
 import {
@@ -8,31 +8,18 @@ import {
 } from "../../utils/htmlUtils";
 import useDragging from "../../hooks/useDragging";
 import useScrollOnMove from "../../hooks/useScrollOnMove";
-import { Position } from "../TreeViewDraggable/TreeViewDraggable.types";
-import TreeViewDraggableContext from "../TreeViewDraggable/TreeViewDraggableContext";
-import useStyles from "./TreeItemDraggable.styles";
+import { Position } from "../TreeView/TreeView.types";
+import TreeViewContext from "../TreeView/TreeViewContext";
+import useStyles from "./TreeItem.styles";
 import {
   createDropTargetList,
   createPositionA11y,
   destroyPositionA11y,
   getDropPosition,
-} from "./TreeItemDraggable.helper";
+} from "./TreeItem.helper";
+import { DragState, DropTargetList } from "./TreeItem.types";
 
-interface DragState {
-  fromItemElement: Element;
-  toItemElement: Element;
-  treeViewElement: Element;
-  scrollContainer: Element;
-  position: Position;
-  toNodeId: string;
-}
-
-interface DropTargetList {
-  position: Position;
-  toItemElement: Element;
-}
-
-function TreeItemDraggable(props: TreeItemProps): JSX.Element {
+function TreeItem(props: TreeItemProps): JSX.Element {
   const {
     children,
     nodeId,
@@ -46,9 +33,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
 
   const classes = useStyles();
 
-  const { draggable, allowDrop, onDrop } = React.useContext(
-    TreeViewDraggableContext
-  );
+  const { draggable, allowDrop, onDrop } = React.useContext(TreeViewContext);
 
   const draggingStateRef = React.useRef<DragState>({
     fromItemElement: null,
@@ -269,7 +254,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
   });
 
   return (
-    <TreeItem
+    <MuiTreeItem
       {...other}
       classes={classes}
       id={nodeId}
@@ -281,8 +266,8 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
       aria-grabbed={draggable ? false : undefined}
     >
       {children}
-    </TreeItem>
+    </MuiTreeItem>
   );
 }
 
-export default TreeItemDraggable;
+export default TreeItem;

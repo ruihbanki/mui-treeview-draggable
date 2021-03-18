@@ -1,5 +1,5 @@
-import { Position } from "../TreeViewDraggable/TreeViewDraggable.types";
-import { DropTarget } from "./TreeItemDraggable.types";
+import { Position } from "../TreeView/TreeView.types";
+import { DropTarget } from "./TreeItem.types";
 
 export function createDropTargetList(rootTreeNode: Element): DropTarget[] {
   const result: DropTarget[] = [];

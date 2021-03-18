@@ -1,11 +1,11 @@
 import React from "react";
 import { mount } from "@cypress/react";
 
-import TreeViewDraggable from "./TreeViewDraggable";
-import TreeItemDraggable from "../TreeItemDraggable";
-import TreeViewDraggableProps from "./TreeViewDraggableProps";
+import TreeView from "./TreeView";
+import TreeItem from "../TreeItem";
+import { TreeViewProps } from "./TreeView.types";
 
-describe("TreeViewDraggable", function () {
+describe("TreeView", function () {
   it("should render correctly the tree", function () {
     mountComponent();
     cy.contains("Item 1").should("exist");
@@ -17,7 +17,7 @@ describe("TreeViewDraggable", function () {
 
   describe("on a mouse device", function () {
     it("should set the attribute data-dragging to true when keep pressing the mouse", function () {
-      mountComponent({ allowDragging: true });
+      mountComponent({ draggable: true });
       cy.contains("Item 2.1.1").trigger("mousedown");
       cy.contains("Item 2.1.1")
         .closest("li")
@@ -26,7 +26,7 @@ describe("TreeViewDraggable", function () {
     });
 
     it("should not set the attribute data-dragging to true when pressing and release the mouse", function () {
-      mountComponent({ allowDragging: true });
+      mountComponent({ draggable: true });
       cy.contains("Item 2.1.1")
         .trigger("mousedown")
         .wait(100)
@@ -39,7 +39,7 @@ describe("TreeViewDraggable", function () {
     });
 
     it("should not set the attribute data-dragging to true when pressing and move the mouse", function () {
-      mountComponent({ allowDragging: true });
+      mountComponent({ draggable: true });
       cy.contains("Item 2.1.1")
         .trigger("mousedown")
         .wait(100)
@@ -51,8 +51,8 @@ describe("TreeViewDraggable", function () {
         .should("equal", "false");
     });
 
-    it.only("should not select when start dragging an item", function () {
-      mountComponent({ allowDragging: true });
+    it("should not select when start dragging an item", function () {
+      mountComponent({ draggable: true });
       cy.contains("Item 2.1.1").trigger("mousedown");
       cy.wait(500)
         .contains("Item 2.1.1")
@@ -65,7 +65,7 @@ describe("TreeViewDraggable", function () {
 
   describe("on a touch device", function () {
     it("should set the attribute data-dragging to true when keep touching", function () {
-      mountComponent({ allowDragging: true });
+      mountComponent({ draggable: true });
       cy.contains("Item 2.1.1").trigger("touchstart");
       cy.contains("Item 2.1.1")
         .closest("li")
@@ -74,7 +74,7 @@ describe("TreeViewDraggable", function () {
     });
 
     it("should not set the attribute data-dragging to true when touch and release", function () {
-      mountComponent({ allowDragging: true });
+      mountComponent({ draggable: true });
       cy.contains("Item 2.1.1")
         .trigger("touchstart")
         .wait(100)
@@ -88,16 +88,16 @@ describe("TreeViewDraggable", function () {
   });
 });
 
-function mountComponent(props: TreeViewDraggableProps = {}) {
+function mountComponent(props: TreeViewProps = {}) {
   mount(
-    <TreeViewDraggable defaultExpanded={["item-2", "item-2-1"]} {...props}>
-      <TreeItemDraggable nodeId="item-1" label="Item 1" />
-      <TreeItemDraggable nodeId="item-2" label="Item 2">
-        <TreeItemDraggable nodeId="item-2-1" label="Item 2.1">
-          <TreeItemDraggable nodeId="item-2-1-1" label="Item 2.1.1" />
-        </TreeItemDraggable>
-      </TreeItemDraggable>
-      <TreeItemDraggable nodeId="item-3" label="Item 3" />
-    </TreeViewDraggable>
+    <TreeView defaultExpanded={["item-2", "item-2-1"]} {...props}>
+      <TreeItem nodeId="item-1" label="Item 1" />
+      <TreeItem nodeId="item-2" label="Item 2">
+        <TreeItem nodeId="item-2-1" label="Item 2.1">
+          <TreeItem nodeId="item-2-1-1" label="Item 2.1.1" />
+        </TreeItem>
+      </TreeItem>
+      <TreeItem nodeId="item-3" label="Item 3" />
+    </TreeView>
   );
 }
