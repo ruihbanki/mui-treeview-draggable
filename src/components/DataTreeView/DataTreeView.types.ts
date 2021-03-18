@@ -1,14 +1,14 @@
-import React from "react";
 import { TreeViewProps } from "../TreeView/TreeView.types";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-type GenericObject = { [key: string]: any };
+interface Node {
+  id: string;
+  label: string;
+  children: Node[];
+}
 
 type DataTreeViewPropsBase = {
-  data: GenericObject;
-  getNodeId: (node: GenericObject) => string;
-  getNodeLabel: (node: GenericObject) => React.ReactNode;
-  getNodeChildren: (node: GenericObject) => GenericObject[];
+  treeData: Node[];
+  renderLabel: (node: Node) => JSX.Element;
 };
 
 export type DataTreeViewProps = DataTreeViewPropsBase & TreeViewProps;

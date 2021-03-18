@@ -3,26 +3,26 @@ import TreeItem from "../TreeItem";
 import TreeView from "../TreeView";
 import { DataTreeViewProps } from "./DataTreeView.types";
 
+const renderLabelDefault = (node) => node.label;
+
 function DataTreeView(props: DataTreeViewProps): JSX.Element {
-  const { getNodeId, getNodeLabel, getNodeChildren, data, ...other } = props;
+  const { treeData, renderLabel = renderLabelDefault, ...other } = props;
 
   const renderNode = React.useCallback(
     (node) => {
-      const nodeId = getNodeId(node);
-      const label = getNodeLabel(node);
-      const childrenNodes = getNodeChildren(node);
+      const label = renderLabel(node);
       return (
-        <TreeItem nodeId={nodeId} label={label}>
-          {childrenNodes?.map((childNode) => renderNode(childNode))}
+        <TreeItem nodeId={node.id} label={label}>
+          {node.children?.map((childNode) => renderNode(childNode))}
         </TreeItem>
       );
     },
-    [getNodeChildren, getNodeId, getNodeLabel]
+    [renderLabel]
   );
 
   const children = React.useMemo(() => {
-    return data?.map((node) => renderNode(node));
-  }, [data, renderNode]);
+    return treeData?.map((node) => renderNode(node));
+  }, [treeData, renderNode]);
 
   return <TreeView {...other}>{children}</TreeView>;
 }

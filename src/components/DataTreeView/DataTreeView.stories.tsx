@@ -53,7 +53,4 @@ Basic.args = {
       label: "Item 4",
     },
   ],
-  getNodeId: (node) => node.id,
-  getNodeLabel: (node) => node.label,
-  getNodeChildren: (node) => node.children,
 };
