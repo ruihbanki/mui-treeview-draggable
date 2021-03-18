@@ -1,9 +1,9 @@
 import { TreeViewProps } from "../TreeView/TreeView.types";
 
-interface Node {
+export interface Node {
   id: string;
   label: string;
-  children: Node[];
+  children?: Node[];
 }
 
 type DataTreeViewPropsBase = {
