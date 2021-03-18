@@ -116,6 +116,20 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
     [clearDropTarget]
   );
 
+  const setDropTargetIfAllowed = React.useCallback(
+    (index) => {
+      const nextDropTarget = dropTargetListRef.current[index];
+      if (
+        allowDropInternal(nextDropTarget.toItemElement, nextDropTarget.position)
+      ) {
+        setDropTarget(nextDropTarget.toItemElement, nextDropTarget.position);
+        return true;
+      }
+      return false;
+    },
+    [allowDropInternal, setDropTarget]
+  );
+
   const handleDragStart = React.useCallback(
     (event) => {
       const fromItemElement = (event.target as Element).closest(
@@ -134,6 +148,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
       };
 
       fromItemElement.setAttribute("data-dragging", "true");
+      fromItemElement.setAttribute("aria-grabbed", "true");
       treeViewElement.setAttribute("data-dragging", "true");
 
       if (event.type !== "keydown") {
@@ -181,25 +196,26 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
 
       switch (event.key) {
         case "ArrowUp": {
-          if (nextIndex > 0) {
+          while (nextIndex > 0) {
             nextIndex--;
+            if (setDropTargetIfAllowed(nextIndex)) {
+              break;
+            }
           }
           break;
         }
         case "ArrowDown": {
-          if (nextIndex < dropTargetListRef.current.length - 1) {
+          while (nextIndex < dropTargetListRef.current.length - 1) {
             nextIndex++;
+            if (setDropTargetIfAllowed(nextIndex)) {
+              break;
+            }
           }
           break;
         }
       }
-
-      if (nextIndex !== -1) {
-        const nextDropTarget = dropTargetListRef.current[nextIndex];
-        setDropTarget(nextDropTarget.toItemElement, nextDropTarget.position);
-      }
     },
-    [setDropTarget]
+    [setDropTargetIfAllowed]
   );
 
   const handleDragCancel = React.useCallback(
@@ -212,6 +228,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
       } = draggingStateRef.current;
 
       fromItemElement.removeAttribute("data-dragging");
+      fromItemElement.setAttribute("aria-grabbed", "false");
       treeViewElement.removeAttribute("data-dragging");
 
       if (toItemElement) {
