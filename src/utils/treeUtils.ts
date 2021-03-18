@@ -144,3 +144,29 @@ export function findParentNode(treeData: Node[], id: string): Node | null {
   }
   return nodeDataByKey[id].parent;
 }
+
+export function removeNode(treeData: Node[], id: string) {
+  const nodeDataByKey = createNodeDataByKey(treeData);
+  const path = findPath(nodeDataByKey, id);
+
+  if (!path) {
+    return treeData;
+  }
+
+  const result = [...treeData];
+  let childrenArr = result;
+  path.forEach((item) => {
+    const index = childrenArr.findIndex((i) => i.id === item.id);
+    if (item.id === id) {
+      childrenArr.splice(index, 1);
+    } else {
+      childrenArr[index] = {
+        ...item,
+        children: [...childrenArr[index].children],
+      };
+      childrenArr = childrenArr[index].children;
+    }
+  });
+
+  return result;
+}
