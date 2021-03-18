@@ -18,6 +18,20 @@ import {
   getDropPosition,
 } from "./TreeItemDraggable.helper";
 
+interface DragState {
+  fromItemElement: Element;
+  toItemElement: Element;
+  treeViewElement: Element;
+  scrollContainer: Element;
+  position: Position;
+  toNodeId: string;
+}
+
+interface DropTargetList {
+  position: Position;
+  toItemElement: Element;
+}
+
 function TreeItemDraggable(props: TreeItemProps): JSX.Element {
   const {
     children,
@@ -36,14 +50,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
     TreeViewDraggableContext
   );
 
-  const draggingStateRef = React.useRef<{
-    fromItemElement: Element;
-    toItemElement: Element;
-    treeViewElement: Element;
-    scrollContainer: Element;
-    position: Position;
-    toNodeId: string;
-  }>({
+  const draggingStateRef = React.useRef<DragState>({
     fromItemElement: null,
     toItemElement: null,
     treeViewElement: null,
@@ -52,9 +59,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
     toNodeId: null,
   });
 
-  const dropTargetListRef = React.useRef<
-    { position: Position; toItemElement: Element }[]
-  >([]);
+  const dropTargetListRef = React.useRef<DropTargetList[]>([]);
 
   const allowDropInternal = React.useCallback(
     (toItemElementParam: Element, positionParam: Position): boolean => {
@@ -67,7 +72,6 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
       }
 
       if (
-        allowDrop &&
         !allowDrop({
           fromNodeId: nodeId,
           toNodeId: toNodeId,
@@ -223,7 +227,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
     [endScrollOnMove]
   );
 
-  const handleDrop = React.useCallback(
+  const handleDragEnd = React.useCallback(
     (event) => {
       handleDragCancel(event);
 
@@ -241,7 +245,7 @@ function TreeItemDraggable(props: TreeItemProps): JSX.Element {
     onMove: handleDragMove,
     onKey: handleDragKey,
     onCancel: handleDragCancel,
-    onDrop: handleDrop,
+    onEnd: handleDragEnd,
     onMouseDown,
     onTouchStart,
     onKeyDown,

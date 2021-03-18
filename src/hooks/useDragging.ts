@@ -10,7 +10,7 @@ interface UseDraggingOptions {
   onMove: (event: MouseEvent | TouchEvent) => void;
   onKey: (event: KeyboardEvent) => void;
   onCancel: (event: MouseEvent | TouchEvent | KeyboardEvent) => void;
-  onDrop: (event: MouseEvent | TouchEvent | KeyboardEvent) => void;
+  onEnd: (event: MouseEvent | TouchEvent | KeyboardEvent) => void;
   onMouseDown: (event: React.MouseEvent) => void;
   onTouchStart: (event: React.TouchEvent) => void;
   onKeyDown: (event: React.KeyboardEvent) => void;
@@ -29,7 +29,7 @@ function useDragging(options: UseDraggingOptions): UseDraggingResult {
     onMove,
     onKey,
     onCancel,
-    onDrop,
+    onEnd,
     onMouseDown,
     onTouchStart,
     onKeyDown,
@@ -65,7 +65,7 @@ function useDragging(options: UseDraggingOptions): UseDraggingResult {
             return;
           }
           startedRef.current = false;
-          onDrop(event);
+          onEnd(event);
           document.removeEventListener("keydown", handleDocumentKeyDown, true);
           break;
         default:
@@ -73,7 +73,7 @@ function useDragging(options: UseDraggingOptions): UseDraggingResult {
           break;
       }
     },
-    [onCancel, onDrop, onKey]
+    [onCancel, onEnd, onKey]
   );
 
   const handleDocumentMouseMove = React.useCallback(
@@ -93,7 +93,7 @@ function useDragging(options: UseDraggingOptions): UseDraggingResult {
       if (active) {
         clearTimeout(timeoutRef.current);
         if (startedRef.current) {
-          onDrop(event);
+          onEnd(event);
         }
         startedRef.current = false;
         document.removeEventListener("mousemove", handleDocumentMouseMove);
@@ -101,7 +101,7 @@ function useDragging(options: UseDraggingOptions): UseDraggingResult {
         document.removeEventListener("keydown", handleDocumentKeyDown, true);
       }
     },
-    [active, handleDocumentKeyDown, handleDocumentMouseMove, onDrop]
+    [active, handleDocumentKeyDown, handleDocumentMouseMove, onEnd]
   );
 
   const handleMouseDown = React.useCallback(
@@ -149,14 +149,14 @@ function useDragging(options: UseDraggingOptions): UseDraggingResult {
       if (active) {
         clearTimeout(timeoutRef.current);
         if (startedRef.current) {
-          onDrop(event);
+          onEnd(event);
         }
         startedRef.current = false;
         document.removeEventListener("touchmove", handleDocumentTouchMove);
         document.removeEventListener("touchend", handleDocumentTouchEnd);
       }
     },
-    [active, handleDocumentTouchMove, onDrop]
+    [active, handleDocumentTouchMove, onEnd]
   );
 
   const handleTouchStart = React.useCallback(
