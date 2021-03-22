@@ -2,26 +2,16 @@ import { TreeViewProps as MuiTreeViewProps } from "@material-ui/lab/TreeView/Tre
 
 export type Position = "before" | "after" | "inside";
 
+export type NodeDrop = {
+  fromNodeId?: string;
+  toNodeId?: string;
+  position?: Position;
+};
+
 type TreeViewPropsBase = {
   draggable?: boolean;
-  onNodeDrop?: ({
-    fromNodeId,
-    toNodeId,
-    position,
-  }: {
-    fromNodeId: string;
-    toNodeId: string;
-    position: Position;
-  }) => void;
-  allowNodeDrop?: ({
-    fromNodeId,
-    toNodeId,
-    position,
-  }: {
-    fromNodeId: string;
-    toNodeId: string;
-    position: Position;
-  }) => boolean;
+  onNodeDrop?: (nodeDrop: NodeDrop) => void;
+  allowNodeDrop?: (nodeDrop: NodeDrop) => boolean;
 };
 
 export type TreeViewContext = TreeViewPropsBase;
