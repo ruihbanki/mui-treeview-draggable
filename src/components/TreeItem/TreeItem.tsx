@@ -33,7 +33,9 @@ function TreeItem(props: TreeItemProps): JSX.Element {
 
   const classes = useStyles();
 
-  const { draggable, allowDrop, onDrop } = React.useContext(TreeViewContext);
+  const { draggable, allowNodeDrop, onNodeDrop } = React.useContext(
+    TreeViewContext
+  );
 
   const draggingStateRef = React.useRef<DragState>({
     fromItemElement: null,
@@ -46,7 +48,7 @@ function TreeItem(props: TreeItemProps): JSX.Element {
 
   const dropTargetListRef = React.useRef<DropTargetList[]>([]);
 
-  const allowDropInternal = React.useCallback(
+  const allowNodeDropInternal = React.useCallback(
     (toItemElementParam: Element, positionParam: Position): boolean => {
       const { fromItemElement } = draggingStateRef.current;
 
@@ -57,7 +59,7 @@ function TreeItem(props: TreeItemProps): JSX.Element {
       }
 
       if (
-        !allowDrop({
+        !allowNodeDrop({
           fromNodeId: nodeId,
           toNodeId: toNodeId,
           position: positionParam,
@@ -68,7 +70,7 @@ function TreeItem(props: TreeItemProps): JSX.Element {
 
       return true;
     },
-    [allowDrop, nodeId]
+    [allowNodeDrop, nodeId]
   );
 
   const clearDropTarget = React.useCallback((): void => {
@@ -105,14 +107,17 @@ function TreeItem(props: TreeItemProps): JSX.Element {
     (index) => {
       const nextDropTarget = dropTargetListRef.current[index];
       if (
-        allowDropInternal(nextDropTarget.toItemElement, nextDropTarget.position)
+        allowNodeDropInternal(
+          nextDropTarget.toItemElement,
+          nextDropTarget.position
+        )
       ) {
         setDropTarget(nextDropTarget.toItemElement, nextDropTarget.position);
         return true;
       }
       return false;
     },
-    [allowDropInternal, setDropTarget]
+    [allowNodeDropInternal, setDropTarget]
   );
 
   const handleDragStart = React.useCallback(
@@ -161,11 +166,11 @@ function TreeItem(props: TreeItemProps): JSX.Element {
 
       const nextPosition = getDropPosition(nextToItemElement, clientX, clientY);
 
-      if (allowDropInternal(nextToItemElement, nextPosition)) {
+      if (allowNodeDropInternal(nextToItemElement, nextPosition)) {
         setDropTarget(nextToItemElement, nextPosition);
       }
     },
-    [allowDropInternal, clearDropTarget, setDropTarget]
+    [allowNodeDropInternal, clearDropTarget, setDropTarget]
   );
 
   const handleDragKey = React.useCallback(
@@ -234,11 +239,11 @@ function TreeItem(props: TreeItemProps): JSX.Element {
       handleDragCancel(event);
 
       const { toNodeId, position } = draggingStateRef.current;
-      if (onDrop && toNodeId && position) {
-        onDrop({ fromNodeId: nodeId, toNodeId, position });
+      if (onNodeDrop && toNodeId && position) {
+        onNodeDrop({ fromNodeId: nodeId, toNodeId, position });
       }
     },
-    [handleDragCancel, nodeId, onDrop]
+    [handleDragCancel, nodeId, onNodeDrop]
   );
 
   const { handleMouseDown, handleTouchStart, handleKeyDown } = useDragging({

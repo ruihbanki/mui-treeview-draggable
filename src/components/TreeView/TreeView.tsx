@@ -5,12 +5,16 @@ import { TreeViewProps } from "./TreeView.types";
 import TreeViewContext from "./TreeViewContext";
 import useStyles from "./TreeView.styles";
 
+function allowNodeDropDefault() {
+  return true;
+}
+
 function TreeView(props: TreeViewProps): JSX.Element {
   const {
     children,
     draggable,
-    onDrop,
-    allowDrop = () => true,
+    onNodeDrop,
+    allowNodeDrop = allowNodeDropDefault,
     ...other
   } = props;
 
@@ -18,8 +22,8 @@ function TreeView(props: TreeViewProps): JSX.Element {
 
   const contextValue = {
     draggable,
-    onDrop,
-    allowDrop,
+    onNodeDrop,
+    allowNodeDrop,
   };
 
   return (

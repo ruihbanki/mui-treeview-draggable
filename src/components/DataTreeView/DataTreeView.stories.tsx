@@ -9,19 +9,14 @@ export default {
   component: DataTreeView,
 } as Meta;
 
-const Template: Story<DataTreeViewProps> = (args) => (
-  <div style={{ paddingBottom: 1000 }}>
-    <DataTreeView {...args} />
-  </div>
-);
+const Template: Story<DataTreeViewProps> = (args) => <DataTreeView {...args} />;
 
 export const Basic = Template.bind({});
 
 Basic.args = {
   draggable: true,
   defaultExpanded: ["item-2", "item-2-2", "item-2-2-1"],
-  onDrop: (params) => console.log(params),
-  data: [
+  treeData: [
     {
       id: "item-1",
       label: "Item 1",
@@ -46,7 +41,7 @@ Basic.args = {
     },
     {
       id: "item-3",
-      label: "Item 2",
+      label: "Item 3",
     },
     {
       id: "item-4",

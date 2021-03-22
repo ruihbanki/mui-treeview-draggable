@@ -4,7 +4,7 @@ export type Position = "before" | "after" | "inside";
 
 type TreeViewPropsBase = {
   draggable?: boolean;
-  onDrop?: ({
+  onNodeDrop?: ({
     fromNodeId,
     toNodeId,
     position,
@@ -13,7 +13,7 @@ type TreeViewPropsBase = {
     toNodeId: string;
     position: Position;
   }) => void;
-  allowDrop?: ({
+  allowNodeDrop?: ({
     fromNodeId,
     toNodeId,
     position,
@@ -23,5 +23,7 @@ type TreeViewPropsBase = {
     position: Position;
   }) => boolean;
 };
+
+export type TreeViewContext = TreeViewPropsBase;
 
 export type TreeViewProps = MuiTreeViewProps & TreeViewPropsBase;
