@@ -34,6 +34,7 @@
   "devDependencies": {
     "@babel/core": "^7.13.8",
     "@cypress/react": "^4.16.4",
+    "@material-ui/icons": "^4.11.2",
     "@storybook/addon-actions": "^6.1.21",
     "@storybook/addon-essentials": "^6.1.21",
     "@storybook/addon-links": "^6.1.21",

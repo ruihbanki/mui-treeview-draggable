@@ -12,6 +12,10 @@ function DataTreeView(props: DataTreeViewProps): JSX.Element {
   const {
     treeData,
     renderLabel = renderLabelDefault,
+    renderIcon,
+    renderEndIcon,
+    renderCollapseIcon,
+    renderExpandIcon,
     onNodeDrop,
     ...other
   } = props;
@@ -49,13 +53,31 @@ function DataTreeView(props: DataTreeViewProps): JSX.Element {
   const renderNode = React.useCallback(
     (node) => {
       const label = renderLabel(node);
+      const icon = renderIcon ? renderIcon(node) : null;
+      const endIcon = renderEndIcon ? renderEndIcon(node) : null;
+      const expandIcon = renderExpandIcon ? renderExpandIcon(node) : null;
+      const collapseIcon = renderCollapseIcon ? renderCollapseIcon(node) : null;
       return (
-        <TreeItem key={node.id} nodeId={node.id} label={label}>
+        <TreeItem
+          key={node.id}
+          nodeId={node.id}
+          label={label}
+          icon={icon}
+          expandIcon={expandIcon}
+          endIcon={endIcon}
+          collapseIcon={collapseIcon}
+        >
           {node.children?.map((childNode) => renderNode(childNode))}
         </TreeItem>
       );
     },
-    [renderLabel]
+    [
+      renderLabel,
+      renderIcon,
+      renderEndIcon,
+      renderExpandIcon,
+      renderCollapseIcon,
+    ]
   );
 
   const children = React.useMemo(() => {
