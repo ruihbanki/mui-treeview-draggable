@@ -1,6 +1,6 @@
 {
   "name": "mui-treeview-draggable",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "build/index.js",
   "module": "build/index.es.js",
   "files": [
@@ -11,6 +11,7 @@
     "build": "rollup -c",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
+    "deploy-storybook": "storybook-to-ghpages",
     "lint": "eslint ./src/**/*.{ts,tsx}",
     "lint-fix": "eslint ./src/**/*.ts --fix",
     "format": "prettier --config .prettierrc src/**/*.{ts,tsx} --write",
@@ -39,6 +40,7 @@
     "@storybook/addon-essentials": "^6.1.21",
     "@storybook/addon-links": "^6.1.21",
     "@storybook/react": "^6.1.21",
+    "@storybook/storybook-deployer": "^2.8.7",
     "@types/chai": "^4.2.15",
     "@types/mocha": "^8.2.1",
     "@types/react": "^17.0.3",

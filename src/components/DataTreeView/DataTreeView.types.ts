@@ -16,6 +16,7 @@ export type DataNodeDrop = {
 };
 
 type DataTreeViewPropsBase = {
+  /** Nested node structure array. */
   treeData: Node[];
   renderLabel?: (node: Node) => JSX.Element;
   renderIcon?: (node: Node) => JSX.Element;
@@ -26,4 +27,5 @@ type DataTreeViewPropsBase = {
   allowNodeDrop?: (dataNodeDrop: DataNodeDrop) => boolean;
 };
 
-export type DataTreeViewProps = DataTreeViewPropsBase & TreeViewProps;
+export type DataTreeViewProps = DataTreeViewPropsBase &
+  Omit<TreeViewProps, "onNodeDrop" | "allowNodeDrop">;

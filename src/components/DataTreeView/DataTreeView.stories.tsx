@@ -2,7 +2,7 @@ import React from "react";
 import { Story, Meta } from "@storybook/react/types-6-0";
 import FolderOutlinedIcon from "@material-ui/icons/FolderOutlined";
 import FolderOpenOutlinedIcon from "@material-ui/icons/FolderOpenOutlined";
-import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutlined";
+import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import KeyboardArrowRightOutlinedIcon from "@material-ui/icons/KeyboardArrowRightOutlined";
 import KeyboardArrowDownOutlinedIcon from "@material-ui/icons/KeyboardArrowDownOutlined";
 
@@ -138,7 +138,7 @@ FileExplorer.args = {
     type === "folder" ? (
       <FolderOpenOutlinedIcon color="primary" />
     ) : (
-      <InsertDriveFileOutlinedIcon color="primary" />
+      <DescriptionOutlinedIcon color="primary" />
     ),
   renderExpandIcon: () => <FolderOutlinedIcon color="primary" />,
   renderCollapseIcon: () => <FolderOpenOutlinedIcon color="primary" />,
