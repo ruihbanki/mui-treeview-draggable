@@ -17,6 +17,7 @@ function DataTreeView(props: DataTreeViewProps): JSX.Element {
     renderCollapseIcon,
     renderExpandIcon,
     onNodeDrop,
+    allowNodeDrop,
     ...other
   } = props;
 
@@ -32,6 +33,7 @@ function DataTreeView(props: DataTreeViewProps): JSX.Element {
     }) => {
       if (onNodeDrop) {
         const fromNode = findNode(treeData, fromNodeId);
+        const toNode = findNode(treeData, toNodeId);
         const treeDataRemoved = removeNode(treeData, fromNodeId);
         const treeDataInserted = insertNode(
           treeDataRemoved,
@@ -40,8 +42,8 @@ function DataTreeView(props: DataTreeViewProps): JSX.Element {
           fromNode
         );
         onNodeDrop({
-          fromNodeId,
-          toNodeId,
+          fromNode,
+          toNode,
           position,
           treeData: treeDataInserted,
         });
@@ -49,6 +51,20 @@ function DataTreeView(props: DataTreeViewProps): JSX.Element {
     },
     [onNodeDrop, treeData]
   );
+
+  const handleAllowNodeDrop = ({ fromNodeId, toNodeId, position }) => {
+    if (!allowNodeDrop) {
+      return true;
+    } else {
+      const fromNode = findNode(treeData, fromNodeId);
+      const toNode = findNode(treeData, toNodeId);
+      return allowNodeDrop({
+        fromNode,
+        toNode,
+        position,
+      });
+    }
+  };
 
   const renderNode = React.useCallback(
     (node) => {
@@ -85,7 +101,11 @@ function DataTreeView(props: DataTreeViewProps): JSX.Element {
   }, [treeData, renderNode]);
 
   return (
-    <TreeView {...other} onNodeDrop={handleNodeDrop}>
+    <TreeView
+      {...other}
+      onNodeDrop={handleNodeDrop}
+      allowNodeDrop={handleAllowNodeDrop}
+    >
       {children}
     </TreeView>
   );

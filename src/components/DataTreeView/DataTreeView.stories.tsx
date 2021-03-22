@@ -137,4 +137,10 @@ FileExplorer.args = {
   renderEndIcon: () => <InsertDriveFileOutlinedIcon color="primary" />,
   renderExpandIcon: () => <FolderOutlinedIcon color="primary" />,
   renderCollapseIcon: () => <FolderOpenOutlinedIcon color="primary" />,
+  allowNodeDrop: ({ toNode, position }) => {
+    if (toNode.type === "file" && position === "inside") {
+      return false;
+    }
+    return true;
+  },
 };
