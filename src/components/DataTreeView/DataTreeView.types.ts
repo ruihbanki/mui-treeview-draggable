@@ -1,4 +1,4 @@
-import { NodeDrop, TreeViewProps } from "../TreeView/TreeView.types";
+import { TreeViewProps, Position } from "../TreeView/TreeView.types";
 
 export interface Node {
   id: string;
@@ -8,7 +8,10 @@ export interface Node {
   [key: string]: any;
 }
 
-export type DataNodeDrop = NodeDrop & {
+export type DataNodeDrop = {
+  fromNode?: Node;
+  toNode?: Node;
+  position?: Position;
   treeData?: Node[];
 };
 
@@ -20,7 +23,7 @@ type DataTreeViewPropsBase = {
   renderExpandIcon?: (node: Node) => JSX.Element;
   renderEndIcon?: (node: Node) => JSX.Element;
   onNodeDrop?: (dataNodeDrop: DataNodeDrop) => void;
-  allowNodeDrop?: (nodeDrop: NodeDrop) => boolean;
+  allowNodeDrop?: (dataNodeDrop: DataNodeDrop) => boolean;
 };
 
 export type DataTreeViewProps = DataTreeViewPropsBase & TreeViewProps;

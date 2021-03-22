@@ -134,7 +134,18 @@ FileExplorer.args = {
   draggable: true,
   defaultExpanded: ["components", "hooks", "utils", "treeitem", "treeview"],
   treeData: filesData,
-  renderEndIcon: () => <InsertDriveFileOutlinedIcon color="primary" />,
+  renderEndIcon: ({ type }) =>
+    type === "folder" ? (
+      <FolderOpenOutlinedIcon color="primary" />
+    ) : (
+      <InsertDriveFileOutlinedIcon color="primary" />
+    ),
   renderExpandIcon: () => <FolderOutlinedIcon color="primary" />,
   renderCollapseIcon: () => <FolderOpenOutlinedIcon color="primary" />,
+  allowNodeDrop: ({ toNode, position }) => {
+    if (toNode.type === "file" && position === "inside") {
+      return false;
+    }
+    return true;
+  },
 };
