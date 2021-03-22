@@ -1,4 +1,4 @@
-export function getScrollContaneir(el: Element): Element {
+export function getScrollContaneir(el: Element): Element | null {
   let current = el;
   while (current) {
     if (hasScrollbar(current)) {

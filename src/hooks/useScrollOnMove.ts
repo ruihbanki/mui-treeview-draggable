@@ -55,7 +55,10 @@ function useScrollOnMove(): Result {
   }, []);
 
   const startScrollOnMove = React.useCallback(
-    (el: Element) => {
+    (el: Element | null) => {
+      if (!el) {
+        return null;
+      }
       containerRef.current = el;
       containerRef.current.addEventListener("pointermove", handlePointerMove);
       containerRef.current.addEventListener("touchmove", handleTouchMove, {
