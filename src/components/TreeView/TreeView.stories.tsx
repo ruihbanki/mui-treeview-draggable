@@ -6,8 +6,9 @@ import TreeItem from "../TreeItem";
 import { TreeViewProps } from "./TreeView.types";
 
 export default {
-  title: "Example/TreeView",
+  title: "Components/TreeView",
   component: TreeView,
+  subcomponents: { TreeItem },
 } as Meta;
 
 const Template: Story<TreeViewProps> = (args) => (
@@ -27,6 +28,7 @@ const Template: Story<TreeViewProps> = (args) => (
 );
 
 export const Basic = Template.bind({});
+
 Basic.args = {
   draggable: true,
   defaultExpanded: ["item-2", "item-2-2", "item-2-2-1"],

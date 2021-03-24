@@ -10,7 +10,7 @@ import DataTreeView from "./DataTreeView";
 import { DataTreeViewProps, DataNodeDrop, Node } from "./DataTreeView.types";
 
 export default {
-  title: "Example/DataTreeView",
+  title: "Components/DataTreeView",
   component: DataTreeView,
 } as Meta;
 

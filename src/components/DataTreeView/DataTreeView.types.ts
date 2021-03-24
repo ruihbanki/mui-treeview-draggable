@@ -18,12 +18,19 @@ export type DataNodeDrop = {
 type DataTreeViewPropsBase = {
   /** Nested node structure array. */
   treeData: Node[];
+  /** Function to return the node's label. */
   renderLabel?: (node: Node) => JSX.Element;
+  /** Function to return the node's icon. */
   renderIcon?: (node: Node) => JSX.Element;
+  /** Function to return the node's collapse icon. */
   renderCollapseIcon?: (node: Node) => JSX.Element;
+  /** Function to return the node's expand icon. */
   renderExpandIcon?: (node: Node) => JSX.Element;
+  /** Function to return the node's end icon. */
   renderEndIcon?: (node: Node) => JSX.Element;
+  /** Called after the drop operation. */
   onNodeDrop?: (dataNodeDrop: DataNodeDrop) => void;
+  /** Whether to allow dropping on the node. */
   allowNodeDrop?: (dataNodeDrop: DataNodeDrop) => boolean;
 };
 

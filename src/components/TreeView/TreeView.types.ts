@@ -9,8 +9,11 @@ export type NodeDrop = {
 };
 
 type TreeViewPropsBase = {
+  /** enable the drag operation. Long mouse press, long touch press or long spacebar press. */
   draggable?: boolean;
+  /** Called after the drop operation. */
   onNodeDrop?: (nodeDrop: NodeDrop) => void;
+  /** Whether to allow dropping on the node. */
   allowNodeDrop?: (nodeDrop: NodeDrop) => boolean;
 };
 
