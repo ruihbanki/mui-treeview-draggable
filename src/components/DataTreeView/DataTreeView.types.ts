@@ -30,7 +30,7 @@ type DataTreeViewPropsBase = {
   renderEndIcon?: (node: Node) => JSX.Element;
   /** Called after the drop operation. */
   onNodeDrop?: (dataNodeDrop: DataNodeDrop) => void;
-  /** Whether to allow dropping on the node. */
+  /** Allow the drop operation in a position */
   allowNodeDrop?: (dataNodeDrop: DataNodeDrop) => boolean;
 };
 
