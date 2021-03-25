@@ -15,7 +15,8 @@
     "lint": "eslint ./src/**/*.{ts,tsx}",
     "lint-fix": "eslint ./src/**/*.ts --fix",
     "format": "prettier --config .prettierrc src/**/*.{ts,tsx} --write",
-    "cypress": "cypress open"
+    "cypress": "cypress open",
+    "publish": "npm publish"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.3",
