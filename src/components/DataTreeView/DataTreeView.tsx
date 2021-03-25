@@ -100,9 +100,12 @@ function DataTreeView(props: DataTreeViewProps): JSX.Element {
     return treeData?.map((node) => renderNode(node));
   }, [treeData, renderNode]);
 
+  /* eslint-disable */
+  const anyOther = other as any;
+
   return (
     <TreeView
-      {...other}
+      {...anyOther}
       onNodeDrop={handleNodeDrop}
       allowNodeDrop={handleAllowNodeDrop}
     >
