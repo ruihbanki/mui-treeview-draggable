@@ -4,7 +4,8 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 # Introduction
 
-The TreeView component is a wrap of the Material UI [TreeView](https://material-ui.com/components/tree-view/#tree-view) with adicional props to support drag and drop.
+The TreeView and TreeItem are wraps of the [Material UI](https://material-ui.com/components) components with adicional props to support drag and drop operations.
+The DataTreeView is a component that takes a tree data json to create a tree. The drag and drop operation and its props were inspired by the [antd](https://ant.design/components/tree/) tree component.
 
 ## Goals
 
@@ -14,12 +15,17 @@ The TreeView component is a wrap of the Material UI [TreeView](https://material-
 
 ## Accessibility
 
-A drag and drop operation can be done on a selected node, keeping the space bar pressed.
-The up and down arrow keys allow users to navigate to the desired drop location and confirm with the Enter key.
+These components have support to accessibility providing keyboard only control and use of aria attributes.
 
-## install
+## Install
 
 yarn add mui-treeview-draggable
+
+## How to use
+
+```
+import { TreeView, TreeItem, DataTreeView } from "mui-treeview-draggable";
+```
 
 ## Author
 
