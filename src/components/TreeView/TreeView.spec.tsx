@@ -139,7 +139,7 @@ describe("TreeView", function () {
         .should("equal", "false");
     });
 
-    it.skip("should call onNodeDrop when drop before a node", function () {
+    it("should call onNodeDrop when drop before a node", function () {
       const onNodeDrop = cy.stub();
       mountComponent({ draggable: true, onNodeDrop });
       cy.contains("Item 3").trigger("touchstart").wait(500);
@@ -155,37 +155,37 @@ describe("TreeView", function () {
         });
     });
 
-    // it("should call onNodeDrop when drop after a node", function () {
-    //   const onNodeDrop = cy.stub();
-    //   mountComponent({ draggable: true, onNodeDrop });
-    //   cy.contains("Item 3").trigger("mousedown").wait(500);
-    //   cy.contains("Item 2.1.1").trigger("mousemove", "bottomLeft");
-    //   cy.contains("Item 3")
-    //     .trigger("mouseup")
-    //     .then(() => {
-    //       expect(onNodeDrop).to.be.calledWith({
-    //         fromNodeId: "item-3",
-    //         toNodeId: "item-2-1-1",
-    //         position: "after",
-    //       });
-    //     });
-    // });
+    it("should call onNodeDrop when drop after a node", function () {
+      const onNodeDrop = cy.stub();
+      mountComponent({ draggable: true, onNodeDrop });
+      cy.contains("Item 3").trigger("touchstart").wait(500);
+      cy.contains("Item 2.1.1").trigger("touchmove", "bottomLeft");
+      cy.contains("Item 3")
+        .trigger("touchend")
+        .then(() => {
+          expect(onNodeDrop).to.be.calledWith({
+            fromNodeId: "item-3",
+            toNodeId: "item-2-1-1",
+            position: "after",
+          });
+        });
+    });
 
-    // it("should call onNodeDrop when drop inside a node", function () {
-    //   const onNodeDrop = cy.stub();
-    //   mountComponent({ draggable: true, onNodeDrop });
-    //   cy.contains("Item 3").trigger("mousedown").wait(500);
-    //   cy.contains("Item 2.1.1").trigger("mousemove", "bottomRight");
-    //   cy.contains("Item 3")
-    //     .trigger("mouseup")
-    //     .then(() => {
-    //       expect(onNodeDrop).to.be.calledWith({
-    //         fromNodeId: "item-3",
-    //         toNodeId: "item-2-1-1",
-    //         position: "inside",
-    //       });
-    //     });
-    // });
+    it("should call onNodeDrop when drop inside a node", function () {
+      const onNodeDrop = cy.stub();
+      mountComponent({ draggable: true, onNodeDrop });
+      cy.contains("Item 3").trigger("touchstart").wait(500);
+      cy.contains("Item 2.1.1").trigger("touchmove", "bottomRight");
+      cy.contains("Item 3")
+        .trigger("touchend")
+        .then(() => {
+          expect(onNodeDrop).to.be.calledWith({
+            fromNodeId: "item-3",
+            toNodeId: "item-2-1-1",
+            position: "inside",
+          });
+        });
+    });
   });
 });
 

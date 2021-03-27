@@ -18,7 +18,7 @@ export function getEventClientPosition(
 ): { clientX: number; clientY: number } {
   let clientX: number;
   let clientY: number;
-  if (event.type === "mousemove") {
+  if ("clientX" in event && "clientY" in event) {
     clientX = (event as MouseEvent).clientX;
     clientY = (event as MouseEvent).clientY;
   } else {
