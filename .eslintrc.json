@@ -6,8 +6,8 @@
   },
   "extends": [
     "eslint:recommended",
-    "plugin:mocha/recommended",
     "plugin:react/recommended",
+    "plugin:mocha/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended",
     "prettier"
