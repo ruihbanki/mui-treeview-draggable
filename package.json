@@ -20,21 +20,20 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.11.3",
-    "@material-ui/lab": "^4.0.0-alpha.57",
-    "@rollup/plugin-commonjs": "^17.1.0",
-    "@rollup/plugin-node-resolve": "^11.2.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "rollup": "^2.42.4",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-typescript2": "^0.30.0"
+    "@material-ui/lab": "^4.0.0-alpha.57"
   },
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.13.10",
+    "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-node-resolve": "^11.2.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "rollup": "^2.42.4",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-typescript2": "^0.30.0",
     "@cypress/react": "^4.16.4",
     "@material-ui/icons": "^4.11.2",
     "@storybook/addon-actions": "^6.1.21",
@@ -47,7 +46,6 @@
     "@types/react": "^17.0.3",
     "@typescript-eslint/eslint-plugin": "^4.19.0",
     "@typescript-eslint/parser": "^4.19.0",
-    "babel-loader": "^8.2.2",
     "cypress": "^6.8.0",
     "eslint": "^7.22.0",
     "eslint-config-prettier": "^8.1.0",
