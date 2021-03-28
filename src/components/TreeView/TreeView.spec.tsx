@@ -187,6 +187,18 @@ describe("TreeView", function () {
         });
     });
   });
+
+  describe("using the keyboard", function () {
+    it.skip("should change the aria-grabbed to true by holding the space key", function () {
+      mountComponent({ draggable: true });
+      cy.contains("li", "Item 3")
+        .focus()
+        .trigger("keydown", { key: " " })
+        .wait(500)
+        .invoke("attr", "aria-grabbed")
+        .should("to.equal", "true");
+    });
+  });
 });
 
 function mountComponent(props: TreeViewProps = {}) {
