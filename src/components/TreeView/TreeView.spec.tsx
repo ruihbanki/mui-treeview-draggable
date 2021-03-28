@@ -189,14 +189,44 @@ describe("TreeView", function () {
   });
 
   describe("using the keyboard", function () {
-    it.skip("should change the aria-grabbed to true by holding the space key", function () {
+    it("should call onNodeDrop when press the Enter key", function () {
+      const onNodeDrop = cy.stub();
+      mountComponent({ draggable: true, onNodeDrop });
+      cy.contains("li", "Item 3")
+        .focus()
+        .trigger("keydown", { key: " ", force: true })
+        .wait(500)
+        .trigger("keydown", { key: "ArrowUp", force: true })
+        .trigger("keydown", { key: "ArrowUp", force: true })
+        .trigger("keydown", { key: "ArrowUp", force: true })
+        .trigger("keydown", { key: "Enter", force: true })
+        .then(() => {
+          expect(onNodeDrop).to.have.calledWith({
+            fromNodeId: "item-3",
+            toNodeId: "item-2-1-1",
+            position: "after",
+          });
+        });
+    });
+
+    it("should change the aria-grabbed to true by holding the space key", function () {
       mountComponent({ draggable: true });
       cy.contains("li", "Item 3")
         .focus()
-        .trigger("keydown", { key: " " })
+        .trigger("keydown", { key: " ", force: true })
         .wait(500)
         .invoke("attr", "aria-grabbed")
         .should("to.equal", "true");
+    });
+
+    it("should not change the aria-grabbed to true when press and release the space key", function () {
+      mountComponent({ draggable: true });
+      cy.contains("li", "Item 3")
+        .focus()
+        .trigger("keydown", { key: " ", force: true })
+        .trigger("keyup", { key: " ", force: true })
+        .invoke("attr", "aria-grabbed")
+        .should("to.equal", "false");
     });
   });
 });
